@@ -11,7 +11,8 @@
     - Backend
 
 ## Objetivo do Sistema
-O sistema tem como objetivo facilitar a decisão em grupo sobre o que comer, tornando o processo mais rápido e menos indeciso. Através da criação de salas compartilháveis, os usuários podem sugerir opções de comidas, restaurantes ou sabores e participar de uma votação coletiva. A plataforma permite visualizar preferências do grupo em tempo real, considerando também possíveis restrições alimentares. Além disso, oferece mecanismos como tempo limite e escolha automática para evitar indecisões prolongadas. O foco é proporcionar uma experiência simples, colaborativa e eficiente para decidir refeições em grupo.
+
+O sistema tem como objetivo gerenciar o saldo digital do restaurante universitário, permitindo que usuários recarreguem sua carteirinha presencialmente ou pelo site. Ao acessar o restaurante, basta utilizar a carteirinha na catraca para liberação rápida da entrada. A plataforma busca reduzir filas, otimizar o fluxo de atendimento e oferecer mais praticidade no pagamento das refeições. Além disso, possibilita o acompanhamento do saldo e histórico de recargas de forma simples e acessível.
 
 ## Tecnologias
 <table style="border: none;">
