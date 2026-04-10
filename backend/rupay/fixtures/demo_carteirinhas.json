@@ -1,0 +1,111 @@
+[
+  {
+    "model": "rupay.operator",
+    "pk": "22222222-2222-2222-2222-222222222201",
+    "fields": {
+      "username": "operador_teste",
+      "name": "Operador (dados de teste)",
+      "created_at": "2026-01-15T12:00:00Z"
+    }
+  },
+  {
+    "model": "rupay.user",
+    "pk": "11111111-1111-1111-1111-111111111101",
+    "fields": {
+      "username": "aluno_saldo_alto",
+      "name": "Ana Teste — saldo alto",
+      "card_number": "2024010250",
+      "created_at": "2026-01-15T12:00:00Z"
+    }
+  },
+  {
+    "model": "rupay.user",
+    "pk": "11111111-1111-1111-1111-111111111102",
+    "fields": {
+      "username": "aluno_sem_saldo",
+      "name": "Bruno Teste — sem crédito",
+      "card_number": "2024010251",
+      "created_at": "2026-01-15T12:00:00Z"
+    }
+  },
+  {
+    "model": "rupay.user",
+    "pk": "11111111-1111-1111-1111-111111111103",
+    "fields": {
+      "username": "aluno_historico",
+      "name": "Carla Teste — extrato variado",
+      "card_number": "2024010252",
+      "created_at": "2026-01-15T12:00:00Z"
+    }
+  },
+  {
+    "model": "rupay.user",
+    "pk": "11111111-1111-1111-1111-111111111104",
+    "fields": {
+      "username": "aluno_exato_refeicao",
+      "name": "Davi Teste — saldo = 1 refeição",
+      "card_number": "2024010253",
+      "created_at": "2026-01-15T12:00:00Z"
+    }
+  },
+  {
+    "model": "rupay.transaction",
+    "pk": "33333333-3333-3333-3333-333333333101",
+    "fields": {
+      "user": "11111111-1111-1111-1111-111111111101",
+      "type": "RECHARGE",
+      "amount": "100.00",
+      "recharge_method": "ONLINE",
+      "operator": null,
+      "created_at": "2026-01-15T12:05:00Z"
+    }
+  },
+  {
+    "model": "rupay.transaction",
+    "pk": "33333333-3333-3333-3333-333333333201",
+    "fields": {
+      "user": "11111111-1111-1111-1111-111111111103",
+      "type": "RECHARGE",
+      "amount": "50.00",
+      "recharge_method": "ONLINE",
+      "operator": null,
+      "created_at": "2026-01-15T12:06:00Z"
+    }
+  },
+  {
+    "model": "rupay.transaction",
+    "pk": "33333333-3333-3333-3333-333333333202",
+    "fields": {
+      "user": "11111111-1111-1111-1111-111111111103",
+      "type": "MEAL",
+      "amount": "5.60",
+      "recharge_method": null,
+      "operator": null,
+      "created_at": "2026-01-15T12:07:00Z"
+    }
+  },
+  {
+    "model": "rupay.transaction",
+    "pk": "33333333-3333-3333-3333-333333333203",
+    "fields": {
+      "user": "11111111-1111-1111-1111-111111111103",
+      "type": "RECHARGE",
+      "amount": "10.00",
+      "recharge_method": "CASH",
+      "operator": "22222222-2222-2222-2222-222222222201",
+      "created_at": "2026-01-15T12:08:00Z"
+    }
+  },
+  {
+    "model": "rupay.transaction",
+    "pk": "33333333-3333-3333-3333-333333333301",
+    "fields": {
+      "user": "11111111-1111-1111-1111-111111111104",
+      "type": "RECHARGE",
+      "amount": "5.60",
+      "recharge_method": "ONLINE",
+      "operator": null,
+      "created_at": "2026-01-15T12:09:00Z"
+    }
+  }
+]

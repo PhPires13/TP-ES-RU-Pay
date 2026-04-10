@@ -1,0 +1,36 @@
+{% extends "rupay/base.html" %}
+
+{% block title %}Catraca — RU Pay{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Simulação da catraca</h1>
+<p class="lead">Debita automaticamente R$ {{ meal_price }} em uma refeição se o saldo for suficiente.</p>
+
+<form class="form-panel" method="post" novalidate>
+  {% csrf_token %}
+  {% for field in form %}
+    <div class="form-row">
+      {{ field.label_tag }}
+      {{ field }}
+      {{ field.errors }}
+    </div>
+  {% endfor %}
+  <button class="btn" type="submit">Liberar entrada</button>
+</form>
+
+{% if result %}
+  {% if result.allowed %}
+    <div class="result-ok">
+      <strong>Acesso liberado</strong>
+      <p class="muted" style="margin:0.5rem 0 0;">{{ result.user.name }} — saldo após débito: R$ {{ result.balance }}</p>
+    </div>
+  {% else %}
+    <div class="result-deny">
+      <strong>Acesso negado</strong>
+      <p class="muted" style="margin:0.5rem 0 0;">
+        {{ result.user.name }} — saldo R$ {{ result.balance }}; necessário R$ {{ result.price }}.
+      </p>
+    </div>
+  {% endif %}
+{% endif %}
+{% endblock %}

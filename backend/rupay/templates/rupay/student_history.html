@@ -1,0 +1,52 @@
+{% extends "rupay/base.html" %}
+
+{% block title %}Extrato — RU Pay{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Extrato</h1>
+<p class="lead">{{ user_obj.name }} · carteirinha {{ user_obj.card_number }}</p>
+
+<div class="balance-box" style="max-width:28rem;">
+  <p style="margin:0;">Saldo atual</p>
+  <strong>R$ {{ balance }}</strong>
+</div>
+
+<div class="actions-row" style="margin:1.25rem 0;">
+  <a class="btn btn-secondary" href="{% url 'rupay:student_lookup' %}?card_number={{ user_obj.card_number|urlencode }}">Consulta</a>
+  <a class="btn btn-secondary" href="{% url 'rupay:student_recharge_online' %}?card_number={{ user_obj.card_number|urlencode }}">Recarga online</a>
+</div>
+
+{% if transactions %}
+  <table class="data">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Tipo</th>
+        <th>Valor</th>
+        <th>Detalhe</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tx in transactions %}
+        <tr>
+          <td>{{ tx.created_at|date:"d/m/Y H:i" }}</td>
+          <td>{{ tx.get_type_display }}</td>
+          <td>
+            {% if tx.type == "MEAL" %}-{% endif %}R$ {{ tx.amount }}
+          </td>
+          <td class="muted">
+            {% if tx.type == "RECHARGE" %}
+              {{ tx.get_recharge_method_display }}
+              {% if tx.operator %}· {{ tx.operator.name }}{% endif %}
+            {% else %}
+              Refeição
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="muted">Nenhuma movimentação ainda.</p>
+{% endif %}
+{% endblock %}

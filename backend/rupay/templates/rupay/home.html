@@ -1,0 +1,28 @@
+{% extends "rupay/base.html" %}
+
+{% block title %}RU Pay — Início{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1>Saldo e refeições sem fila</h1>
+  <p>Consulte seu saldo, recarregue online ou no caixa, e simule a passagem na catraca.</p>
+</section>
+
+<div class="cards">
+  <article class="card">
+    <h2>Área do aluno</h2>
+    <p>Cadastro, consulta de saldo, recarga pelo site e extrato de movimentações.</p>
+    <a class="btn" href="{% url 'rupay:student_lookup' %}">Entrar como aluno</a>
+  </article>
+  <article class="card">
+    <h2>Operador de caixa</h2>
+    <p>Leitura da carteirinha e registro de recarga presencial com identificação do operador.</p>
+    <a class="btn btn-secondary" href="{% url 'rupay:operator_panel' %}">Painel do operador</a>
+  </article>
+  <article class="card">
+    <h2>Catraca</h2>
+    <p>Valida saldo e debita o valor da refeição (R$ {{ meal_price }}).</p>
+    <a class="btn btn-secondary" href="{% url 'rupay:turnstile' %}">Simular catraca</a>
+  </article>
+</div>
+{% endblock %}

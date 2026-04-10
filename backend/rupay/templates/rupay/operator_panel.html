@@ -1,0 +1,53 @@
+{% extends "rupay/base.html" %}
+
+{% block title %}Operador — RU Pay{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Painel do operador</h1>
+<p class="lead">Leia a carteirinha para ver dados do aluno e registrar recarga presencial.</p>
+
+<form class="form-panel" method="post" novalidate>
+  {% csrf_token %}
+  {% for field in lookup_form %}
+    <div class="form-row">
+      {{ field.label_tag }}
+      {{ field }}
+      {{ field.errors }}
+    </div>
+  {% endfor %}
+  <button class="btn" type="submit" name="lookup" value="1">Ler carteirinha</button>
+</form>
+
+{% if not operators_exist %}
+  <p class="muted" style="margin-top:1.25rem;">
+    Nenhum operador cadastrado. Crie um em <a href="/admin/rupay/operator/add/">Admin · Operadores</a> (use o superusuário do Django).
+  </p>
+{% endif %}
+
+{% if user_obj and balance is not None %}
+  <div class="balance-box" style="margin-top:1.75rem;">
+    <p class="muted" style="margin:0 0 0.25rem;">Titular</p>
+    <p style="margin:0;font-size:1.1rem;font-weight:600;">{{ user_obj.name }}</p>
+    <p class="muted" style="margin:0.75rem 0 0.25rem;">Carteirinha</p>
+    <p style="margin:0;">{{ user_obj.card_number }}</p>
+    <p class="muted" style="margin:0.75rem 0 0.25rem;">Saldo</p>
+    <strong>R$ {{ balance }}</strong>
+  </div>
+
+  {% if recharge_form and operators_exist %}
+    <h2 style="margin:1.75rem 0 0.75rem;font-size:1.1rem;">Registrar recarga</h2>
+    <form class="form-panel" method="post" novalidate style="max-width:32rem;">
+      {% csrf_token %}
+      <input type="hidden" name="card_number" value="{{ user_obj.card_number }}">
+      {% for field in recharge_form %}
+        <div class="form-row">
+          {{ field.label_tag }}
+          {{ field }}
+          {{ field.errors }}
+        </div>
+      {% endfor %}
+      <button class="btn" type="submit" name="recharge" value="1">Registrar recarga</button>
+    </form>
+  {% endif %}
+{% endif %}
+{% endblock %}
