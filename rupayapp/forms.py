@@ -1,22 +1,16 @@
 from decimal import Decimal
 
 from django import forms
-from django.core.validators import RegexValidator
 
-from .models import Transaction, User
-
-CARD_NUMBER_VALIDATOR = RegexValidator(
-    regex=r'^\d{10}$',
-    message='Use exatamente 10 dígitos (ex.: 2024010250).',
-)
+from .models import CARD_NUMBER_VALIDATOR, Transaction, User
 
 
 class CardNumberForm(forms.Form):
     card_number = forms.CharField(
         label='Número da carteirinha',
-        max_length=50,
+        max_length=8,
         validators=[CARD_NUMBER_VALIDATOR],
-        widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder': '2024010250'}),
+        widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder': '12345678'}),
     )
 
 
@@ -27,22 +21,22 @@ class UserRegistrationForm(forms.ModelForm):
         labels = {
             'username': 'Usuário (login)',
             'name': 'Nome completo',
-            'card_number': 'Número da carteirinha (10 dígitos)',
+            'card_number': 'Número da carteirinha (8 dígitos)',
             'photo': 'Foto',
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['card_number'].validators.append(CARD_NUMBER_VALIDATOR)
-        self.fields['card_number'].widget.attrs.setdefault('placeholder', '2024010250')
+        self.fields['card_number'].widget.attrs.setdefault('placeholder', '12345678')
 
 
 class OnlineRechargeForm(forms.Form):
     card_number = forms.CharField(
         label='Número da carteirinha',
-        max_length=50,
+        max_length=8,
         validators=[CARD_NUMBER_VALIDATOR],
-        widget=forms.TextInput(attrs={'placeholder': '2024010250'}),
+        widget=forms.TextInput(attrs={'placeholder': '12345678'}),
     )
     amount = forms.DecimalField(
         label='Valor (R$)',
@@ -69,7 +63,7 @@ class OperatorRechargeForm(forms.Form):
 class TurnstileForm(forms.Form):
     card_number = forms.CharField(
         label='Número da carteirinha',
-        max_length=50,
+        max_length=8,
         validators=[CARD_NUMBER_VALIDATOR],
-        widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder': '2024010250'}),
+        widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder': '12345678'}),
     )

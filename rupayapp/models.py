@@ -1,12 +1,19 @@
+from django.core.validators import RegexValidator
 from django.db import models
 import uuid
+
+
+CARD_NUMBER_VALIDATOR = RegexValidator(
+    regex=r'^\d{8}$',
+    message='Use exatamente 8 dígitos (ex.: 12345678).',
+)
 
 
 class User(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=100)
-    card_number = models.CharField(max_length=50, unique=True)
+    card_number = models.CharField(max_length=8, unique=True, validators=[CARD_NUMBER_VALIDATOR])
     created_at = models.DateTimeField(auto_now_add=True)
     photo = models.ImageField(upload_to='photos/', null=True, blank=True)
 
