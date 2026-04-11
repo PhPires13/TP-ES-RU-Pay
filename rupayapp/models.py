@@ -1,4 +1,5 @@
 from django.core.validators import RegexValidator
+from django.contrib.auth.hashers import check_password, make_password
 from django.db import models
 import uuid
 
@@ -12,6 +13,7 @@ CARD_NUMBER_VALIDATOR = RegexValidator(
 class User(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=50, unique=True)
+    password_hash = models.CharField(max_length=128, blank=True, default='')
     name = models.CharField(max_length=100)
     card_number = models.CharField(max_length=8, unique=True, validators=[CARD_NUMBER_VALIDATOR])
     created_at = models.DateTimeField(auto_now_add=True)
@@ -19,6 +21,12 @@ class User(models.Model):
 
     def __str__(self):
         return self.name
+
+    def set_password(self, raw_password):
+        self.password_hash = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password_hash)
 
 
 class Transaction(models.Model):

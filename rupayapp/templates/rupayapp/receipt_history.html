@@ -12,9 +12,9 @@
 </div>
 
 <div class="actions-row" style="margin:1.25rem 0;">
-  <a class="btn btn-secondary" href="{% url 'rupayapp:student_lookup' %}?card_number={{ user_obj.card_number|urlencode }}">Consulta</a>
-  <a class="btn btn-secondary" href="{% url 'rupayapp:student_recharge_online' %}?card_number={{ user_obj.card_number|urlencode }}">Recarga online</a>
-  <a class="btn btn-secondary" href="{% url 'rupayapp:student_history' %}?card_number={{ user_obj.card_number|urlencode }}">Extrato completo</a>
+  <a class="btn btn-secondary" href="{% url 'rupayapp:student_lookup' %}">Início</a>
+  <a class="btn btn-secondary" href="{% url 'rupayapp:student_recharge_online' %}">Recarga online</a>
+  <a class="btn btn-secondary" href="{% url 'rupayapp:student_history' %}">Extrato completo</a>
 </div>
 
 {% if receipts %}

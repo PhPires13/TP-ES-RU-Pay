@@ -2,7 +2,12 @@ from decimal import Decimal
 
 from django import forms
 
-from .models import CARD_NUMBER_VALIDATOR, Transaction, User
+from .models import CARD_NUMBER_VALIDATOR, Transaction, Transaction, User
+
+
+class StudentLoginForm(forms.Form):
+    username = forms.CharField(label='Usuário', max_length=50)
+    password = forms.CharField(label='Senha', widget=forms.PasswordInput())
 
 
 class CardNumberForm(forms.Form):
@@ -15,6 +20,9 @@ class CardNumberForm(forms.Form):
 
 
 class UserRegistrationForm(forms.ModelForm):
+    password = forms.CharField(label='Senha', widget=forms.PasswordInput())
+    password_confirm = forms.CharField(label='Confirmar senha', widget=forms.PasswordInput())
+
     class Meta:
         model = User
         fields = ('username', 'name', 'card_number', 'photo')
@@ -29,6 +37,21 @@ class UserRegistrationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['card_number'].validators.append(CARD_NUMBER_VALIDATOR)
         self.fields['card_number'].widget.attrs.setdefault('placeholder', '12345678')
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        password_confirm = cleaned_data.get('password_confirm')
+        if password and password_confirm and password != password_confirm:
+            raise forms.ValidationError('As senhas não conferem.')
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.set_password(self.cleaned_data['password'])
+        if commit:
+            instance.save()
+        return instance
 
 
 class OnlineRechargeForm(forms.Form):

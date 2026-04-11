@@ -1,18 +1,39 @@
 from django.contrib import messages
 from django.db import transaction as db_transaction
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from .forms import (
     CardNumberForm,
     OnlineRechargeForm,
     OperatorRechargeForm,
+    StudentLoginForm,
     TurnstileForm,
     UserRegistrationForm,
 )
 from .models import Transaction, User  # type: ignore
 from .utils import meal_price, user_balance
+
+
+STUDENT_SESSION_KEY = 'student_user_id'
+
+
+def _get_student_from_session(request):
+    student_id = request.session.get(STUDENT_SESSION_KEY)
+    if not student_id:
+        return None
+    try:
+        return User.objects.get(id=student_id)  # type: ignore
+    except User.DoesNotExist:  # type: ignore
+        request.session.pop(STUDENT_SESSION_KEY, None)
+        return None
+
+
+def _get_student_from_request(request):
+    card_number = request.GET.get('card_number', '').strip() or request.POST.get('card_number', '').strip()
+    if card_number:
+        return get_object_or_404(User, card_number=card_number)  # type: ignore
+    return _get_student_from_session(request)
 
 
 def receipt(request, transaction_id):
@@ -29,12 +50,11 @@ def receipt(request, transaction_id):
 
 
 def receipt_history(request):
-    card_number = request.GET.get('card_number', '').strip()
-    if not card_number:
-        messages.info(request, 'Informe o número da carteirinha para ver os comprovantes.')
+    u = _get_student_from_request(request)
+    if not u:
+        messages.info(request, 'Entre com usuário e senha para ver os comprovantes.')
         return redirect('rupayapp:student_lookup')
 
-    u = get_object_or_404(User, card_number=card_number)  # type: ignore
     receipts = u.transactions.filter(type=Transaction.TransactionType.MEAL).order_by('-created_at')  # type: ignore
     return render(
         request,
@@ -66,26 +86,37 @@ def student_register(request):
 
 @require_http_methods(['GET', 'POST'])
 def student_lookup(request):
-    user_obj = None
-    balance = None
-    card_number = request.GET.get('card_number', '').strip()
-    if request.method == 'POST':
-        form = CardNumberForm(request.POST)
+    user_obj = _get_student_from_session(request)
+    balance = user_balance(user_obj) if user_obj else None
+    if request.method == 'POST' and 'logout' in request.POST:
+        request.session.pop(STUDENT_SESSION_KEY, None)
+        messages.success(request, 'Você saiu da área do aluno.')
+        return redirect('rupayapp:student_lookup')
+
+    if user_obj:
+        form = StudentLoginForm(initial={'username': user_obj.username})
+    elif request.method == 'POST':
+        form = StudentLoginForm(request.POST)
         if form.is_valid():
-            card_number = form.cleaned_data['card_number']
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
             try:
-                user_obj = User.objects.get(card_number=card_number)  # type: ignore
-                balance = user_balance(user_obj)
+                user_obj = User.objects.get(username=username)  # type: ignore
             except User.DoesNotExist:  # type: ignore
-                messages.error(request, 'Carteirinha não encontrada. Verifique o número ou cadastre-se.')
+                messages.error(request, 'Usuário ou senha inválidos.')
+            else:
+                if user_obj.check_password(password):
+                    request.session[STUDENT_SESSION_KEY] = str(user_obj.id)
+                    balance = user_balance(user_obj)
+                    messages.success(request, f'Bem-vindo, {user_obj.name}.')
+                else:
+                    user_obj = None
+                    messages.error(request, 'Usuário ou senha inválidos.')
     else:
-        form = CardNumberForm(initial={'card_number': card_number} if card_number else None)
-        if card_number:
-            try:
-                user_obj = User.objects.get(card_number=card_number)  # type: ignore
-                balance = user_balance(user_obj)
-            except User.DoesNotExist:  # type: ignore
-                messages.warning(request, 'Carteirinha não encontrada.')
+        form = StudentLoginForm()
+
+    if not user_obj:
+        balance = None
 
     return render(
         request,
@@ -101,14 +132,18 @@ def student_lookup(request):
 
 @require_http_methods(['GET', 'POST'])
 def student_recharge_online(request):
+    user_obj = _get_student_from_request(request)
     if request.method == 'POST':
         form = OnlineRechargeForm(request.POST)
         if form.is_valid():
-            card = form.cleaned_data['card_number']
-            try:
-                u = User.objects.get(card_number=card)  # type: ignore
-            except User.DoesNotExist:  # type: ignore
-                messages.error(request, 'Carteirinha não encontrada.')
+            u = user_obj
+            if u is None:
+                try:
+                    u = User.objects.get(card_number=form.cleaned_data['card_number'])  # type: ignore
+                except User.DoesNotExist:  # type: ignore
+                    messages.error(request, 'Carteirinha não encontrada.')
+            if u is None:
+                pass
             else:
                 Transaction.objects.create(  # type: ignore
                     user=u,
@@ -120,9 +155,11 @@ def student_recharge_online(request):
                     request,
                     f'Recarga online de R$ {form.cleaned_data["amount"]} registrada com sucesso.',
                 )
-                return redirect(f'{reverse("rupayapp:student_lookup")}?card_number={u.card_number}')
+                return redirect('rupayapp:student_lookup')
     else:
         initial = {}
+        if user_obj:
+            initial['card_number'] = user_obj.card_number
         if cn := request.GET.get('card_number', '').strip():
             initial['card_number'] = cn
         form = OnlineRechargeForm(initial=initial)
@@ -131,12 +168,11 @@ def student_recharge_online(request):
 
 
 def student_history(request):
-    card_number = request.GET.get('card_number', '').strip()
-    if not card_number:
-        messages.info(request, 'Informe o número da carteirinha para ver o extrato.')
+    u = _get_student_from_request(request)
+    if not u:
+        messages.info(request, 'Entre com usuário e senha para ver o extrato.')
         return redirect('rupayapp:student_lookup')
 
-    u = get_object_or_404(User, card_number=card_number)
     txs = u.transactions.order_by('-created_at')
     return render(
         request,
