@@ -45,6 +45,21 @@ class CardNumberValidationTests(TestCase):
 		self.assertNotEqual(user.password_hash, 'segredo123')
 		self.assertTrue(user.check_password('segredo123'))
 
+	def test_user_registration_form_shows_password_mismatch_error(self):
+		form = UserRegistrationForm(
+			{
+				'username': 'aluno2',
+				'name': 'Aluno Teste 2',
+				'card_number': '23456789',
+				'password': 'segredo123',
+				'password_confirm': 'diferente123',
+			}
+		)
+
+		self.assertFalse(form.is_valid())
+		self.assertIn('password_confirm', form.errors)
+		self.assertIn('As senhas não conferem.', form.errors['password_confirm'])
+
 
 class StudentLoginFlowTests(TestCase):
 	def setUp(self):
@@ -89,4 +104,19 @@ class StudentLoginFlowTests(TestCase):
 		response = self.client.get(reverse('rupayapp:student_history'), follow=True)
 
 		self.assertContains(response, 'Entre com usuário e senha para ver o extrato.')
+
+	def test_student_register_displays_password_mismatch_message(self):
+		response = self.client.post(
+			reverse('rupayapp:student_register'),
+			{
+				'username': 'novo_aluno',
+				'name': 'Novo Aluno',
+				'card_number': '34567890',
+				'password': 'senha12345',
+				'password_confirm': 'senha54321',
+			},
+		)
+
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, 'As senhas não conferem.')
 

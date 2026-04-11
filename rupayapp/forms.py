@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from django import forms
 
-from .models import CARD_NUMBER_VALIDATOR, Transaction, Transaction, User
+from .models import CARD_NUMBER_VALIDATOR, Transaction, User
 
 
 class StudentLoginForm(forms.Form):
@@ -43,7 +43,7 @@ class UserRegistrationForm(forms.ModelForm):
         password = cleaned_data.get('password')
         password_confirm = cleaned_data.get('password_confirm')
         if password and password_confirm and password != password_confirm:
-            raise forms.ValidationError('As senhas não conferem.')
+            self.add_error('password_confirm', 'As senhas não conferem.')
         return cleaned_data
 
     def save(self, commit=True):
