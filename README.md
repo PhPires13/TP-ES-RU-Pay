@@ -29,17 +29,15 @@ O sistema tem como objetivo gerenciar o saldo digital do restaurante universitá
     <tr>
         <td align="center">
             <h3>Backend</h3>
-            <a href="https://www.python.org" target="_blank" rel="noreferrer"> <img src="https://www.python.org/static/community_logos/python-logo-generic.svg" alt="python" height="40"/> </a>
-            <a href="https://www.djangoproject.com/" target="_blank" rel="noreferrer"> <img src="https://static.djangoproject.com/img/logos/django-logo-negative.svg" alt="django" height="40"/> </a>
-            <a href="https://www.djangoproject.com/" target="_blank" rel="noreferrer"> <img src="https://www.django-rest-framework.org/img/logo-dark.png#only-dark" alt="djangorest" height="40"/> </a>
+            <a href="https://www.python.org" target="_blank" rel="noreferrer"> <img src="https://www.python.org/static/community_logos/python-logo-generic.svg" alt="python" height="40"/> </a> <br>
+            <a href="https://www.django-rest-framework.org" target="_blank" rel="noreferrer"> <img src="https://www.django-rest-framework.org/img/logo-dark.png#only-dark" alt="djangorest" height="40"/> </a>
         </td>
         <td align="center">
             <h3>Frontend</h3>
             <a href="https://www.w3.org/html/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="html5" height="40"/> </a>
             <a href="https://www.w3schools.com/css/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg" alt="css3" height="40"/> </a>
-            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" height="40"/> </a>
-            <a href="https://reactjs.org/" target="_blank" rel="noreferrer"> <img src="https://react.dev/images/brand/wordmark_dark.svg" alt="react" height="40"/> </a>
-            <a href="https://mui.com" target="_blank" rel="noreferrer"> <img src="https://cdn.cloudinary.com/stichting-frontend-amsterdam/image/upload/v1724858269/mui-logo-dark-text_qi0eho.png" alt="mui" height="40"/> </a>
+            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" height="40"/> </a> <br>
+            <a href="https://www.djangoproject.com/" target="_blank" rel="noreferrer"> <img src="https://static.djangoproject.com/img/logos/django-logo-negative.svg" alt="django" height="40"/> </a>
         </td>
     </tr>
     <tr>
