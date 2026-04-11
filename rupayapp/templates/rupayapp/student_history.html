@@ -12,9 +12,9 @@
 </div>
 
 <div class="actions-row" style="margin:1.25rem 0;">
-  <a class="btn btn-secondary" href="{% url 'rupay:student_lookup' %}?card_number={{ user_obj.card_number|urlencode }}">Consulta</a>
-  <a class="btn btn-secondary" href="{% url 'rupay:student_recharge_online' %}?card_number={{ user_obj.card_number|urlencode }}">Recarga online</a>
-  <a class="btn btn-secondary" href="{% url 'rupay:receipt_history' %}?card_number={{ user_obj.card_number|urlencode }}">Meus comprovantes</a>
+  <a class="btn btn-secondary" href="{% url 'rupayapp:student_lookup' %}?card_number={{ user_obj.card_number|urlencode }}">Consulta</a>
+  <a class="btn btn-secondary" href="{% url 'rupayapp:student_recharge_online' %}?card_number={{ user_obj.card_number|urlencode }}">Recarga online</a>
+  <a class="btn btn-secondary" href="{% url 'rupayapp:receipt_history' %}?card_number={{ user_obj.card_number|urlencode }}">Meus comprovantes</a>
 </div>
 
 {% if transactions %}
@@ -40,7 +40,7 @@
               {{ tx.get_recharge_method_display }}
               {% if tx.operator %}· {{ tx.operator.name }}{% endif %}
             {% elif tx.type == "MEAL" %}
-              <a href="{% url 'rupay:receipt' transaction_id=tx.id %}">Ver comprovante</a>
+              <a href="{% url 'rupayapp:receipt' transaction_id=tx.id %}">Ver comprovante</a>
             {% else %}
               Refeição
             {% endif %}

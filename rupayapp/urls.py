@@ -1,23 +1,17 @@
 from django.urls import path
 
-from .views import (
-    CardLookupView,
-    OnlineRechargeView,
-    OperatorRechargeView,
-    TurnstileValidationView,
-    UserBalanceView,
-    UserTransactionHistoryView,
-)
+from . import views
+
+app_name = 'rupayapp'
 
 urlpatterns = [
-    path('recharges/online/', OnlineRechargeView.as_view(), name='recharge-online'),
-    path('recharges/operator/', OperatorRechargeView.as_view(), name='recharge-operator'),
-    path('users/<uuid:user_id>/balance/', UserBalanceView.as_view(), name='user-balance'),
-    path(
-        'users/<uuid:user_id>/transactions/',
-        UserTransactionHistoryView.as_view(),
-        name='user-transactions',
-    ),
-    path('turnstile/validate/', TurnstileValidationView.as_view(), name='turnstile-validate'),
-    path('cards/<str:card_number>/', CardLookupView.as_view(), name='card-lookup'),
+    path('', views.home, name='home'),
+    path('aluno/cadastro/', views.student_register, name='student_register'),
+    path('aluno/consulta/', views.student_lookup, name='student_lookup'),
+    path('aluno/recarga-online/', views.student_recharge_online, name='student_recharge_online'),
+    path('aluno/extrato/', views.student_history, name='student_history'),
+    path('operador/', views.operator_panel, name='operator_panel'),
+    path('catraca/', views.turnstile, name='turnstile'),
+    path('comprovante/<uuid:transaction_id>/', views.receipt, name='receipt'),
+    path('comprovantes/', views.receipt_history, name='receipt_history'),
 ]

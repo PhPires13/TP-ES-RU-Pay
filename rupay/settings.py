@@ -117,3 +117,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Valor debitado por refeição na catraca (exibição e validação no front)
+RU_MEAL_PRICE = '5.60'
+
+# Armazenamento de imagens
+MEDIA_URL = '/media/'
+MEDIA_ROOT = 'media'

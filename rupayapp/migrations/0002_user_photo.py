@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rupay', '0001_initial'),
+        ('rupayapp', '0001_initial'),
     ]
 
     operations = [

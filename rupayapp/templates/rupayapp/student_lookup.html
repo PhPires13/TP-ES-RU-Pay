@@ -26,13 +26,13 @@
     <p class="muted" style="margin:0.75rem 0 0;">Valor da refeição na catraca: R$ {{ meal_price }}</p>
   </div>
   <div class="actions-row">
-    <a class="btn" href="{% url 'rupay:student_recharge_online' %}?card_number={{ user_obj.card_number|urlencode }}">Recarga online</a>
-    <a class="btn btn-secondary" href="{% url 'rupay:student_history' %}?card_number={{ user_obj.card_number|urlencode }}">Ver extrato</a>
-    <a class="btn btn-secondary" href="{% url 'rupay:receipt_history' %}?card_number={{ user_obj.card_number|urlencode }}">Meus comprovantes</a>
+    <a class="btn" href="{% url 'rupayapp:student_recharge_online' %}?card_number={{ user_obj.card_number|urlencode }}">Recarga online</a>
+    <a class="btn btn-secondary" href="{% url 'rupayapp:student_history' %}?card_number={{ user_obj.card_number|urlencode }}">Ver extrato</a>
+    <a class="btn btn-secondary" href="{% url 'rupayapp:receipt_history' %}?card_number={{ user_obj.card_number|urlencode }}">Meus comprovantes</a>
   </div>
 {% endif %}
 
 <p class="muted" style="margin-top:1.5rem;">
-  <a href="{% url 'rupay:student_register' %}">Primeiro acesso? Cadastre-se</a>
+  <a href="{% url 'rupayapp:student_register' %}">Primeiro acesso? Cadastre-se</a>
 </p>
 {% endblock %}
