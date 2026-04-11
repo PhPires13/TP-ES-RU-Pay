@@ -28,6 +28,16 @@
   <div class="balance-box" style="margin-top:1.75rem;">
     <p class="muted" style="margin:0 0 0.25rem;">Titular</p>
     <p style="margin:0;font-size:1.1rem;font-weight:600;">{{ user_obj.name }}</p>
+    {% if user_obj.photo %}
+        <p class="muted" style="margin-top:0.5rem; color: #b45309; font-weight: 500;">
+  Operador, confirme se a foto corresponde ao aluno presente.
+</p>
+  <div style="margin-top:0.75rem;">
+    <img src="{{ user_obj.photo.url }}" width="150" style="border-radius:8px;" />
+  </div>
+{% else %}
+  <p class="muted" style="margin-top:0.5rem;">Sem foto cadastrada</p>
+{% endif %}
     <p class="muted" style="margin:0.75rem 0 0.25rem;">Carteirinha</p>
     <p style="margin:0;">{{ user_obj.card_number }}</p>
     <p class="muted" style="margin:0.75rem 0 0.25rem;">Saldo</p>

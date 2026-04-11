@@ -23,11 +23,12 @@ class CardNumberForm(forms.Form):
 class UserRegistrationForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('username', 'name', 'card_number')
+        fields = ('username', 'name', 'card_number', 'photo')
         labels = {
             'username': 'Usuário (login)',
             'name': 'Nome completo',
             'card_number': 'Número da carteirinha (10 dígitos)',
+            'photo': 'Foto',
         }
 
     def __init__(self, *args, **kwargs):

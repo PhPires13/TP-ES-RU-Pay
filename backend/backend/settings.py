@@ -121,3 +121,7 @@ STATIC_URL = 'static/'
 
 # Valor debitado por refeição na catraca (exibição e validação no front)
 RU_MEAL_PRICE = '5.60'
+
+# Armazenamento de imagens
+MEDIA_URL = '/media/'
+MEDIA_ROOT = 'media'

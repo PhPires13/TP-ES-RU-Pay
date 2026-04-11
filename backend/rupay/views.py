@@ -54,7 +54,7 @@ def home(request):
 @require_http_methods(['GET', 'POST'])
 def student_register(request):
     if request.method == 'POST':
-        form = UserRegistrationForm(request.POST)
+        form = UserRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, 'Cadastro realizado. Você já pode consultar saldo e recarregar.')
