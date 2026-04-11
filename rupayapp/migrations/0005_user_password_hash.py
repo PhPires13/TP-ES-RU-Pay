@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='password_hash',
-            field=models.CharField(blank=True, default='', max_length=128),
+            field=models.CharField(max_length=32),
         ),
     ]
