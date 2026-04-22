@@ -13,9 +13,9 @@ class StudentLoginForm(forms.Form):
 class CardNumberForm(forms.Form):
     card_number = forms.CharField(
         label='Número da carteirinha',
-        max_length=8,
+        max_length=10,
         validators=[CARD_NUMBER_VALIDATOR],
-        widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder': '12345678'}),
+        widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder': '1234567890'}),
     )
 
 
@@ -29,14 +29,14 @@ class UserRegistrationForm(forms.ModelForm):
         labels = {
             'username': 'Usuário (login)',
             'name': 'Nome completo',
-            'card_number': 'Número da carteirinha (8 dígitos)',
+            'card_number': 'Número da carteirinha (10 dígitos)',
             'photo': 'Foto',
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['card_number'].validators.append(CARD_NUMBER_VALIDATOR)
-        self.fields['card_number'].widget.attrs.setdefault('placeholder', '12345678')
+        self.fields['card_number'].widget.attrs.setdefault('placeholder', '1234567890')
 
     def clean(self):
         cleaned_data = super().clean()
@@ -57,9 +57,9 @@ class UserRegistrationForm(forms.ModelForm):
 class OnlineRechargeForm(forms.Form):
     card_number = forms.CharField(
         label='Número da carteirinha',
-        max_length=8,
+        max_length=10,
         validators=[CARD_NUMBER_VALIDATOR],
-        widget=forms.TextInput(attrs={'placeholder': '12345678'}),
+        widget=forms.TextInput(attrs={'placeholder': '1234567890'}),
     )
     amount = forms.DecimalField(
         label='Valor (R$)',
