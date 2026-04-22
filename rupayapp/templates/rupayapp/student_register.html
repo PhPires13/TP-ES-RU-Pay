@@ -13,86 +13,14 @@
       {{ form.non_field_errors }}
     </div>
   {% endif %}
-
-  {# username #}
-  <div class="form-row">
-    <div class="field-label-row">
-      {{ form.username.label_tag }}
-      <span class="field-tip" tabindex="0">
-        <i class="bi bi-info-circle-fill"></i>
-        <span class="tip-bubble">Nome único para entrar no sistema (ex.: joao.silva)</span>
-      </span>
+  {% for field in form %}
+    <div class="form-row">
+      {{ field.label_tag }}
+      {{ field }}
+      {{ field.errors }}
     </div>
-    {{ form.username }}
-    {{ form.username.errors }}
-  </div>
-
-  {# name #}
-  <div class="form-row">
-    <div class="field-label-row">
-      {{ form.name.label_tag }}
-      <span class="field-tip" tabindex="0">
-        <i class="bi bi-info-circle-fill"></i>
-        <span class="tip-bubble">Seu nome completo como consta nos registros da UFMG</span>
-      </span>
-    </div>
-    {{ form.name }}
-    {{ form.name.errors }}
-  </div>
-
-  {# card_number #}
-  <div class="form-row">
-    <div class="field-label-row">
-      {{ form.card_number.label_tag }}
-      <span class="field-tip" tabindex="0">
-        <i class="bi bi-info-circle-fill"></i>
-        <span class="tip-bubble">10 dígitos impressos na sua carteirinha do RU</span>
-      </span>
-    </div>
-    {{ form.card_number }}
-    {{ form.card_number.errors }}
-  </div>
-
-  {# password #}
-  <div class="form-row">
-    <div class="field-label-row">
-      {{ form.password.label_tag }}
-      <span class="field-tip" tabindex="0">
-        <i class="bi bi-info-circle-fill"></i>
-        <span class="tip-bubble">Mínimo de 6 caracteres; use letras e números</span>
-      </span>
-    </div>
-    {{ form.password }}
-    {{ form.password.errors }}
-  </div>
-
-  {# password_confirm #}
-  <div class="form-row">
-    <div class="field-label-row">
-      {{ form.password_confirm.label_tag }}
-      <span class="field-tip" tabindex="0">
-        <i class="bi bi-info-circle-fill"></i>
-        <span class="tip-bubble">Repita a senha exatamente igual à anterior</span>
-      </span>
-    </div>
-    {{ form.password_confirm }}
-    {{ form.password_confirm.errors }}
-  </div>
-
-  {# photo #}
-  <div class="form-row">
-    <div class="field-label-row">
-      {{ form.photo.label_tag }}
-      <span class="field-tip" tabindex="0">
-        <i class="bi bi-info-circle-fill"></i>
-        <span class="tip-bubble">Opcional — usada pelo operador para confirmar identidade</span>
-      </span>
-    </div>
-    {{ form.photo }}
-    {{ form.photo.errors }}
-  </div>
-
-  <button class="btn" type="submit"><i class="bi bi-person-check"></i> Cadastrar</button>
+  {% endfor %}
+  <button class="btn" type="submit">Cadastrar</button>
 </form>
 
 <p class="muted" style="margin-top:1.25rem;">
