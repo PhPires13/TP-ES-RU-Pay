@@ -2,6 +2,9 @@ from django.contrib import messages
 from django.db import transaction as db_transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
+import urllib.request
+import json
+from datetime import date
 
 from .forms import (
     CardNumberForm,
@@ -69,6 +72,42 @@ def receipt_history(request):
 
 def home(request):
     return render(request, 'rupayapp/home.html', {'meal_price': meal_price()})
+
+
+FUMP_API = 'https://fump.ufmg.br:3003/cardapios'
+
+
+def _fump_get(path):
+    try:
+        with urllib.request.urlopen(f'{FUMP_API}{path}', timeout=5) as r:
+            return json.loads(r.read().decode())
+    except Exception:
+        return None
+
+
+def cardapio(request):
+    restaurantes = _fump_get('/restaurantes') or []
+    cardapio_data = None
+    erro = None
+    restaurante_id = request.GET.get('restaurante', '')
+    data_consulta = request.GET.get('data', date.today().isoformat())
+
+    if restaurante_id and data_consulta:
+        result = _fump_get(f'/cardapio?id={restaurante_id}&dataInicio={data_consulta}&dataFim={data_consulta}')
+        if result is None:
+            erro = 'Não foi possível conectar ao serviço da FUMP.'
+        elif not result.get('cardapios'):
+            erro = 'Nenhum cardápio encontrado para essa data.'
+        else:
+            cardapio_data = result
+
+    return render(request, 'rupayapp/cardapio.html', {
+        'restaurantes': restaurantes,
+        'cardapio_data': cardapio_data,
+        'restaurante_id': restaurante_id,
+        'data_consulta': data_consulta,
+        'erro': erro,
+    })
 
 
 @require_http_methods(['GET', 'POST'])
