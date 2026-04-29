@@ -120,7 +120,7 @@ Após iniciar, acesse: `http://127.0.0.1:8000/`
 
 ---
 
-### 3. Consulta de salso
+### 3. Consulta de saldo
 
 **Como** aluno
 **Quero** consultar meu saldo disponível
