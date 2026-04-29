@@ -71,15 +71,30 @@ a:hover {
 
 .nav {
   display: flex;
-  gap: 1.25rem;
-  flex-wrap: wrap;
+  gap: 0.5rem;
 }
+
 .nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
   color: var(--muted);
-  font-size: 0.95rem;
+  transition: all 0.2s ease;
 }
+
 .nav a:hover {
+  background: #e3f2fd;
   color: var(--accent);
+  text-decoration: none;
+}
+
+.nav a.active {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
 }
 
 .messages {
