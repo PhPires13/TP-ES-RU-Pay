@@ -1,0 +1,49 @@
+stateDiagram-v2
+
+[*] --> InserirCarteirinha
+
+state "Usuário" as Usuario {
+    InserirCarteirinha : Inserir Carteirinha
+}
+
+state "Sistema" as Sistema {
+    VerificarDados : Verificar dados
+    CalcularSaldo : Calcular saldo
+    CriarRegistro : Criar registro MEAL
+    LiberarCatraca : Liberar catraca
+}
+
+state "Banco de Dados" as DB {
+    ConsultarBD : Consultar dados da carteirinha
+}
+
+InserirCarteirinha --> VerificarDados : Envia dados
+VerificarDados --> ConsultarBD : Solicita verificação
+ConsultarBD --> RetornarResultado : Retorna resultado
+
+state RetornarResultado <<choice>>
+RetornarResultado --> ErroDadosInvalidos : Dados inválidos
+RetornarResultado --> CalcularSaldo : Dados válidos
+
+CalcularSaldo --> C2
+state C2 <<choice>>
+C2 --> NegarTransacao : Saldo insuficiente
+C2 --> CriarRegistro : Saldo suficiente
+
+CriarRegistro --> LiberarCatraca
+LiberarCatraca --> [*]
+
+ErroDadosInvalidos : Erro - Dados inválidos
+NegarTransacao : Negar - Saldo insuficiente
+
+classDef usuario fill:#eef2ff,stroke:#818cf8
+classDef sistema fill:#f0fdfa,stroke:#2dd4bf
+classDef banco fill:#fff7ed,stroke:#fb923c
+classDef decisao fill:#fdf4ff,stroke:#e879f9
+classDef erro fill:#fef2f2,stroke:#f87171
+
+class Usuario usuario
+class Sistema sistema
+class DB banco
+class RetornarResultado,C2 decisao
+class ErroDadosInvalidos,NegarTransacao erro

@@ -1,0 +1,43 @@
+classDiagram
+    class User {
+        +UUID id
+        +String username
+        +String password_hash
+        +String name
+        +String card_number
+        +DateTime created_at
+        +Image photo
+        +set_password(raw_password)
+        +check_password(raw_password) bool
+    }
+
+    class Transaction {
+        +UUID id
+        +User user
+        +TransactionType type
+        +Decimal amount
+        +MethodType recharge_method
+        +DateTime created_at
+    }
+
+    %%representação das escolhas
+    class TransactionType {
+        <<enumeration>>
+        RECHARGE
+        MEAL
+    }
+
+    class MethodType {
+        <<enumeration>>
+        ONLINE
+        CASH
+        CARD
+    }
+
+    %%usuário pode ter muitas transações (1 para N)
+    User "1" --> "0..*" Transaction : efetua/consulta
+    
+    %% Transação utiliza os tipos definidos
+    Transaction ..> TransactionType : tipo_da_transacao
+    Transaction ..> MethodType : metodo_de_pagamento
+  

@@ -1,0 +1,17 @@
+graph
+    A((Início)) --> B[Inserir Carteirinha]
+    B --> C{Existe no Banco?}
+    
+    C -- Não --> D[Erro: Não Cadastrada]
+    C -- Sim --> E[Calcular Saldo]
+    
+    E --> F{Saldo >= Preço?}
+    
+    F -- Não --> G[Negar: Saldo Insuficiente]
+    F -- Sim --> H[Transação Atômica]
+
+    %%atomicidade garante que a ação é indivisível, rollback caso insucesso
+    
+    H --> I[Criar Registro MEAL]
+    I --> J[Liberar Catraca]
+    J --> K((Fim))

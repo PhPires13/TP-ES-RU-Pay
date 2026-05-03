@@ -24,6 +24,7 @@ O sistema tem como objetivo gerenciar o saldo digital do restaurante universitá
             <a href="https://github.com/features/copilot" target="_blank" rel="noreferrer"> <img src="https://ai.nd.edu/assets/607853/300x/github_copilot_logo_4x.png" alt="copilot" height="40"/> </a>
             <a href="https://openai.com/codex/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/codex-text.png" alt="codex" height="40"/> </a>
             <a href="https://claude.ai/login" target="_blank" rel="noreferrer"> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Claude_AI_logo.svg/960px-Claude_AI_logo.svg.png" alt="codex" height="40"/> </a>
+            <a href="hhttps://mermaid.ai/web/" target="_blank" rel="noreferrer"> <img src="https://marketplace.visualstudio.com/items?itemName=MermaidChart.vscode-mermaid-chart" alt="mermaid" height="40"/> </a>
         </td>
     </tr>
     <tr>
