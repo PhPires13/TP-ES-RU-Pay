@@ -15,4 +15,7 @@ urlpatterns = [
     path('catraca/', views.turnstile, name='turnstile'),
     path('comprovante/<uuid:transaction_id>/', views.receipt, name='receipt'),
     path('comprovantes/', views.receipt_history, name='receipt_history'),
+    path('preferencias/', views.preferences, name='preferences'),
+    path('api/set-theme/', views.set_user_theme, name='set_theme'),
+    path('dashboard/', views.dashboard, name='dashboard'),
 ]

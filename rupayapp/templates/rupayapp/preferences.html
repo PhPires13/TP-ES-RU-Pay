@@ -1,0 +1,118 @@
+{% extends "rupayapp/base.html" %}
+
+{% block title %}Preferências — RU Pay{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Preferências</h1>
+  <p>Personalize sua experiência no RU Pay</p>
+</div>
+
+{% csrf_token %}
+  <h2 style="margin-top: 2rem; margin-bottom: 1rem;">Selecione um Tema</h2>
+  
+  <div class="cards" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+    <!-- Light Theme -->
+    <div class="card theme-selector-card" data-theme="light">
+      <div style="text-align: center; margin-bottom: 0.5rem;">
+        <i class="bi bi-sun" style="font-size: 2rem; color: #ffc107;"></i>
+      </div>
+      <h3 style="margin: 0 0 0.5rem; text-align: center;">Tema Claro</h3>
+      <p style="margin: 0; text-align: center; font-size: 0.85rem;">Interface clara e limpa para uso em ambientes bem iluminados</p>
+      <button class="btn theme-btn" data-theme="light" style="width: 100%; margin-top: 0.75rem;">
+        <span class="theme-check" style="display: none; margin-right: 0.5rem;">✓</span>
+        Selecionar
+      </button>
+    </div>
+
+    <!-- Dark Theme -->
+    <div class="card theme-selector-card" data-theme="dark">
+      <div style="text-align: center; margin-bottom: 0.5rem;">
+        <i class="bi bi-moon" style="font-size: 2rem; color: #667eea;"></i>
+      </div>
+      <h3 style="margin: 0 0 0.5rem; text-align: center;">Tema Escuro</h3>
+      <p style="margin: 0; text-align: center; font-size: 0.85rem;">Interface escura e confortável para uso em ambientes com pouca luz</p>
+      <button class="btn theme-btn" data-theme="dark" style="width: 100%; margin-top: 0.75rem;">
+        <span class="theme-check" style="display: none; margin-right: 0.5rem;">✓</span>
+        Selecionar
+      </button>
+    </div>
+
+    <!-- High Contrast Theme -->
+    <div class="card theme-selector-card" data-theme="high_contrast">
+      <div style="text-align: center; margin-bottom: 0.5rem;">
+        <i class="bi bi-eye" style="font-size: 2rem; color: #0066cc;"></i>
+      </div>
+      <h3 style="margin: 0 0 0.5rem; text-align: center;">Alto Contraste</h3>
+      <p style="margin: 0; text-align: center; font-size: 0.85rem;">Interface de alto contraste para melhor acessibilidade visual</p>
+      <button class="btn theme-btn" data-theme="high_contrast" style="width: 100%; margin-top: 0.75rem;">
+        <span class="theme-check" style="display: none; margin-right: 0.5rem;">✓</span>
+        Selecionar
+      </button>
+    </div>
+  </div>
+
+  <div style="margin-top: 2rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); color: var(--muted); font-size: 0.9rem;">
+    </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const themeButtons = document.querySelectorAll('.theme-btn');
+    
+    // Update UI to show selected theme
+    function updateThemeUI() {
+      const activeTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      
+      themeButtons.forEach(btn => {
+        const btnTheme = btn.getAttribute('data-theme');
+        const checkIcon = btn.querySelector('.theme-check');
+        
+        if (btnTheme === activeTheme) {
+          btn.style.fontWeight = '600';
+          checkIcon.style.display = 'inline';
+        } else {
+          btn.style.fontWeight = 'normal';
+          checkIcon.style.display = 'none';
+        }
+      });
+    }
+    
+    // Initial UI update
+    updateThemeUI();
+    
+    // Add click handlers to theme buttons
+    themeButtons.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const theme = this.getAttribute('data-theme');
+        setTheme(theme);
+        
+        // Update UI
+        setTimeout(updateThemeUI, 50);
+      });
+    });
+  });
+</script>
+
+<style>
+  .theme-selector-card {
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .theme-selector-card:hover {
+    box-shadow: 0 4px 16px rgba(26, 35, 50, 0.12);
+    transform: translateY(-2px);
+  }
+  
+  .theme-btn {
+    transition: all 0.2s ease;
+  }
+  
+  .theme-btn:hover {
+    transform: scale(1.02);
+  }
+</style>
+{% endblock %}

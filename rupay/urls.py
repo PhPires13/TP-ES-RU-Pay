@@ -23,3 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
   path('', include('rupayapp.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# notification endpoint is defined in the app urls

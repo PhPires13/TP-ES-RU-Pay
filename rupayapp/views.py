@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.db import transaction as db_transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
+from .models import Notificacao
 import urllib.request
 import json
 from datetime import date
@@ -345,3 +347,77 @@ def turnstile(request):
         'meal_price': meal_price(),
         'balance': balance,
     })
+
+
+def get_user_theme(request):
+    """
+    Retorna o tema preferido do usuário.
+    - Se aluno autenticado: retorna tema do banco de dados
+    - Caso contrário: retorna tema padrão 'light'
+    """
+    user = _get_student_from_session(request)
+    if user:
+        return user.theme_preference
+    return 'light'
+
+
+@require_http_methods(['POST'])
+def set_user_theme(request):
+    """
+    API para salvar preferência de tema do usuário.
+    POST: JSON com { "theme": "light" | "dark" | "high_contrast" }
+    Retorna JSON com { "status": "success", "theme": "..." } ou erro
+    """
+    try:
+        data = json.loads(request.body)
+        theme = data.get('theme', '').strip()
+        
+        # Validar tema
+        valid_themes = ['light', 'dark', 'high_contrast']
+        if theme not in valid_themes:
+            return JsonResponse({'status': 'error', 'message': 'Tema inválido'}, status=400)
+        
+        # Se usuário autenticado, salvar no banco
+        user = _get_student_from_session(request)
+        if user:
+            user.theme_preference = theme
+            user.save()
+        
+        return JsonResponse({'status': 'success', 'theme': theme})
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'JSON inválido'}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+@require_http_methods(['GET'])
+def preferences(request):
+    """
+    Página de preferências do usuário.
+    Exibe opções de tema e outras futuras preferências.
+    """
+    user_theme = get_user_theme(request)
+    user = _get_student_from_session(request)
+    
+    return render(request, 'rupayapp/preferences.html', {
+        'user_theme': user_theme,
+        'user_obj': user,
+    })
+
+def dashboard(request):
+    # Buscar o aluno salvo na sessão (fluxo do protótipo usa sessão, não auth.User)
+    aluno = _get_student_from_session(request)
+    if aluno:
+        notificacoes = Notificacao.objects.filter(aluno=aluno, lida=False)
+    else:
+        notificacoes = []
+
+    return render(request, 'rupayapp/dashboard.html', {
+        'notificacoes': notificacoes,
+    })
+
+# View para marcar como lida via AJAX/POST
+def marcar_notificacao_lida(request, pk):
+    Notificacao.objects.filter(pk=pk, aluno=request.user).update(lida=True)
+    return JsonResponse({'status': 'ok'})

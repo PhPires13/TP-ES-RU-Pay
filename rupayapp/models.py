@@ -1,6 +1,7 @@
 from django.core.validators import RegexValidator
 from django.contrib.auth.hashers import check_password, make_password
 from django.db import models
+from django.conf import settings
 import uuid
 
 
@@ -11,6 +12,12 @@ CARD_NUMBER_VALIDATOR = RegexValidator(
 
 
 class User(models.Model):
+    THEME_CHOICES = [
+        ('light', 'Claro'),
+        ('dark', 'Escuro'),
+        ('high_contrast', 'Alto Contraste'),
+    ]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=50, unique=True)
     password_hash = models.CharField(max_length=32)
@@ -18,6 +25,7 @@ class User(models.Model):
     card_number = models.CharField(max_length=10, unique=True, validators=[CARD_NUMBER_VALIDATOR])
     created_at = models.DateTimeField(auto_now_add=True)
     photo = models.ImageField(upload_to='photos/', null=True, blank=True)
+    theme_preference = models.CharField(max_length=15, choices=THEME_CHOICES, default='light')
 
     def __str__(self):
         return self.name

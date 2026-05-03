@@ -7,36 +7,39 @@
 <p class="lead">Entre com usuário e senha para acessar saldo, recarga e extrato.</p>
 
 {% if user_obj and balance is not None %}
-  <div class="balance-box">
-    <p class="muted" style="margin:0 0 0.25rem;">{{ user_obj.name }}</p>
-    <p style="margin:0;">Usuário: <strong>{{ user_obj.username }}</strong></p>
-    <p style="margin:0.35rem 0 0;">Carteirinha: <strong>{{ user_obj.card_number }}</strong></p>
-    <p style="margin:0.75rem 0 0;">Saldo disponível</p>
-    <strong>R$ {{ balance }}</strong>
-    <p class="muted" style="margin:0.75rem 0 0;">Valor da refeição na catraca: R$ {{ meal_price }}</p>
-  </div>
-  <div class="actions-row">
-    <a class="btn" href="{% url 'rupayapp:student_recharge_online' %}">Recarga online</a>
-    <a class="btn btn-secondary" href="{% url 'rupayapp:student_history' %}">Ver extrato</a>
-    <a class="btn btn-secondary" href="{% url 'rupayapp:receipt_history' %}">Meus comprovantes</a>
-  </div>
+<div class="balance-box">
+  <p class="muted" style="margin:0 0 0.25rem;">{{ user_obj.name }}</p>
+  <p style="margin:0;">Usuário: <strong>{{ user_obj.username }}</strong></p>
+  <p style="margin:0.35rem 0 0;">Carteirinha: <strong>{{ user_obj.card_number }}</strong></p>
+  <p style="margin:0.75rem 0 0;">Saldo disponível</p>
+  <strong>R$ {{ balance }}</strong>
+  {% if balance is not None and balance < meal_price %} <div class="balance-tag">Atenção! Saldo está abaixo de R$ {meal_price}. <br> Para continuar usando sua carteirinha, por favor, recarregue.
+</div>
+{% endif %}
+<p class="muted" style="margin:0.75rem 0 0;">Valor da refeição na catraca: R$ {{ meal_price }}</p>
+</div>
+<div class="actions-row">
+  <a class="btn" href="{% url 'rupayapp:student_recharge_online' %}">Recarga online</a>
+  <a class="btn btn-secondary" href="{% url 'rupayapp:student_history' %}">Ver extrato</a>
+  <a class="btn btn-secondary" href="{% url 'rupayapp:receipt_history' %}">Meus comprovantes</a>
+</div>
 
-  <form method="post" style="margin-top:1rem;">
-    {% csrf_token %}
-    <button class="btn btn-secondary" type="submit" name="logout" value="1">Sair</button>
-  </form>
+<form method="post" style="margin-top:1rem;">
+  {% csrf_token %}
+  <button class="btn btn-secondary" type="submit" name="logout" value="1">Sair</button>
+</form>
 {% else %}
-  <form class="form-panel" method="post" novalidate>
-    {% csrf_token %}
-    {% for field in form %}
-      <div class="form-row">
-        {{ field.label_tag }}
-        {{ field }}
-        {{ field.errors }}
-      </div>
-    {% endfor %}
-    <button class="btn" type="submit">Entrar</button>
-  </form>
+<form class="form-panel" method="post" novalidate>
+  {% csrf_token %}
+  {% for field in form %}
+  <div class="form-row">
+    {{ field.label_tag }}
+    {{ field }}
+    {{ field.errors }}
+  </div>
+  {% endfor %}
+  <button class="btn" type="submit">Entrar</button>
+</form>
 {% endif %}
 {% if not user_obj %}
 <p class="muted" style="margin-top:1.5rem;">
