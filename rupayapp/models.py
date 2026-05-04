@@ -5,8 +5,8 @@ import uuid
 
 
 CARD_NUMBER_VALIDATOR = RegexValidator(
-    regex=r'^\d{10}$',
-    message='Use exatamente 10 dígitos (ex.: 1234567890).',
+    regex=r'^\d{8}$',
+    message='Use exatamente 8 dígitos (ex.: 12345678).',
 )
 
 
@@ -15,7 +15,7 @@ class User(models.Model):
     username = models.CharField(max_length=50, unique=True)
     password_hash = models.CharField(max_length=32)
     name = models.CharField(max_length=100)
-    card_number = models.CharField(max_length=10, unique=True, validators=[CARD_NUMBER_VALIDATOR])
+    card_number = models.CharField(max_length=8, unique=True, validators=[CARD_NUMBER_VALIDATOR])
     created_at = models.DateTimeField(auto_now_add=True)
     photo = models.ImageField(upload_to='photos/', null=True, blank=True)
 
