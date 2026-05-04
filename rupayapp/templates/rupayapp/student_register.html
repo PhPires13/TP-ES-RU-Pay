@@ -8,11 +8,6 @@
 
 <form class="form-panel" method="post" enctype="multipart/form-data" novalidate>
   {% csrf_token %}
-  {% if form.non_field_errors %}
-    <div class="form-row">
-      {{ form.non_field_errors }}
-    </div>
-  {% endif %}
   {% for field in form %}
     <div class="form-row">
       {{ field.label_tag }}

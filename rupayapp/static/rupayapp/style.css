@@ -275,6 +275,18 @@ a:hover {
   letter-spacing: -0.02em;
 }
 
+@media (max-width: 768px) {
+  .balance-box {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+  .balance-box img,
+  .balance-box > div:first-of-type {
+    width: 80px !important;
+    height: 80px !important;
+  }
+}
+
 .actions-row {
   display: flex;
   flex-wrap: wrap;
@@ -390,4 +402,17 @@ table.data tr:last-child td {
 .field-tip:focus .tip-bubble {
   visibility: visible;
   opacity: 1;
+}
+
+.student-dashboard {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .student-dashboard {
+    grid-template-columns: 1fr;
+  }
 }

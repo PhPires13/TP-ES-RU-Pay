@@ -52,23 +52,6 @@ def receipt(request, transaction_id):
     )
 
 
-def receipt_history(request):
-    u = _get_student_from_request(request)
-    if not u:
-        messages.info(request, 'Entre com usuário e senha para ver os comprovantes.')
-        return redirect('rupayapp:student_lookup')
-
-    receipts = u.transactions.filter(type=Transaction.TransactionType.MEAL).order_by('-created_at')  # type: ignore
-    return render(
-        request,
-        'rupayapp/receipt_history.html',
-        {
-            'user_obj': u,
-            'receipts': receipts,
-            'balance': user_balance(u),
-        },
-    )
-
 
 def home(request):
     return render(request, 'rupayapp/home.html', {'meal_price': meal_price()})
@@ -127,6 +110,9 @@ def student_register(request):
 def student_lookup(request):
     user_obj = _get_student_from_session(request)
     balance = user_balance(user_obj) if user_obj else None
+    recharge_form = None
+    transactions = None
+    
     if request.method == 'POST' and 'logout' in request.POST:
         request.session.pop(STUDENT_SESSION_KEY, None)
         messages.success(request, 'Você saiu da área do aluno.')
@@ -134,6 +120,26 @@ def student_lookup(request):
 
     if user_obj:
         form = StudentLoginForm(initial={'username': user_obj.username})
+        recharge_form = OnlineRechargeForm()
+        transactions = user_obj.transactions.order_by('-created_at')
+        
+        # Handle recharge form submission
+        if request.method == 'POST' and 'recharge' in request.POST:
+            recharge_form = OnlineRechargeForm(request.POST)
+            if recharge_form.is_valid():
+                Transaction.objects.create(  # type: ignore
+                    user=user_obj,
+                    type=Transaction.TransactionType.RECHARGE,
+                    amount=recharge_form.cleaned_data['amount'],
+                    recharge_method=Transaction.MethodType.ONLINE,
+                )
+                messages.success(
+                    request,
+                    f'Recarga online de R$ {recharge_form.cleaned_data["amount"]} registrada com sucesso.',
+                )
+                balance = user_balance(user_obj)
+                recharge_form = OnlineRechargeForm()
+                transactions = user_obj.transactions.order_by('-created_at')
     elif request.method == 'POST':
         form = StudentLoginForm(request.POST)
         if form.is_valid():
@@ -147,6 +153,8 @@ def student_lookup(request):
                 if user_obj.check_password(password):
                     request.session[STUDENT_SESSION_KEY] = str(user_obj.id)
                     balance = user_balance(user_obj)
+                    recharge_form = OnlineRechargeForm()
+                    transactions = user_obj.transactions.order_by('-created_at')
                     messages.success(request, f'Bem-vindo, {user_obj.name}.')
                 else:
                     user_obj = None
@@ -165,61 +173,8 @@ def student_lookup(request):
             'user_obj': user_obj,
             'balance': balance,
             'meal_price': meal_price(),
-        },
-    )
-
-
-@require_http_methods(['GET', 'POST'])
-def student_recharge_online(request):
-    user_obj = _get_student_from_request(request)
-    if request.method == 'POST':
-        form = OnlineRechargeForm(request.POST)
-        if form.is_valid():
-            u = user_obj
-            if u is None:
-                try:
-                    u = User.objects.get(card_number=form.cleaned_data['card_number'])  # type: ignore
-                except User.DoesNotExist:  # type: ignore
-                    messages.error(request, 'Carteirinha não encontrada.')
-            if u is None:
-                pass
-            else:
-                Transaction.objects.create(  # type: ignore
-                    user=u,
-                    type=Transaction.TransactionType.RECHARGE,
-                    amount=form.cleaned_data['amount'],
-                    recharge_method=Transaction.MethodType.ONLINE,
-                )
-                messages.success(
-                    request,
-                    f'Recarga online de R$ {form.cleaned_data["amount"]} registrada com sucesso.',
-                )
-                return redirect('rupayapp:student_lookup')
-    else:
-        initial = {}
-        if user_obj:
-            initial['card_number'] = user_obj.card_number
-        if cn := request.GET.get('card_number', '').strip():
-            initial['card_number'] = cn
-        form = OnlineRechargeForm(initial=initial)
-
-    return render(request, 'rupayapp/student_recharge_online.html', {'form': form})
-
-
-def student_history(request):
-    u = _get_student_from_request(request)
-    if not u:
-        messages.info(request, 'Entre com usuário e senha para ver o extrato.')
-        return redirect('rupayapp:student_lookup')
-
-    txs = u.transactions.order_by('-created_at')
-    return render(
-        request,
-        'rupayapp/student_history.html',
-        {
-            'user_obj': u,
-            'transactions': txs,
-            'balance': user_balance(u),
+            'recharge_form': recharge_form,
+            'transactions': transactions,
         },
     )
 

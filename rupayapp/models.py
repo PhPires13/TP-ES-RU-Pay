@@ -13,7 +13,7 @@ CARD_NUMBER_VALIDATOR = RegexValidator(
 class User(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=50, unique=True)
-    password_hash = models.CharField(max_length=32)
+    password_hash = models.CharField(max_length=128, blank=True, default='')
     name = models.CharField(max_length=100)
     card_number = models.CharField(max_length=8, unique=True, validators=[CARD_NUMBER_VALIDATOR])
     created_at = models.DateTimeField(auto_now_add=True)

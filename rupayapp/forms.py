@@ -55,12 +55,6 @@ class UserRegistrationForm(forms.ModelForm):
 
 
 class OnlineRechargeForm(forms.Form):
-    card_number = forms.CharField(
-        label='Número da carteirinha',
-        max_length=8,
-        validators=[CARD_NUMBER_VALIDATOR],
-        widget=forms.TextInput(attrs={'placeholder': '12345678'}),
-    )
     amount = forms.DecimalField(
         label='Valor (R$)',
         min_value=Decimal('0.01'),

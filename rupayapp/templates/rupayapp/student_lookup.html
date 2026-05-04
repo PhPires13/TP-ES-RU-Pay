@@ -7,21 +7,100 @@
 <p class="lead">Entre com usuário e senha para acessar saldo, recarga e extrato.</p>
 
 {% if user_obj and balance is not None %}
-  <div class="balance-box">
-    <p class="muted" style="margin:0 0 0.25rem;">{{ user_obj.name }}</p>
-    <p style="margin:0;">Usuário: <strong>{{ user_obj.username }}</strong></p>
-    <p style="margin:0.35rem 0 0;">Carteirinha: <strong>{{ user_obj.card_number }}</strong></p>
-    <p style="margin:0.75rem 0 0;">Saldo disponível</p>
-    <strong>R$ {{ balance }}</strong>
-    <p class="muted" style="margin:0.75rem 0 0;">Valor da refeição na catraca: R$ {{ meal_price }}</p>
-  </div>
-  <div class="actions-row">
-    <a class="btn" href="{% url 'rupayapp:student_recharge_online' %}">Recarga online</a>
-    <a class="btn btn-secondary" href="{% url 'rupayapp:student_history' %}">Ver extrato</a>
-    <a class="btn btn-secondary" href="{% url 'rupayapp:receipt_history' %}">Meus comprovantes</a>
+  <div class="balance-box" style="display: flex; align-items: center; gap: 1.5rem; padding: 1.25rem;">
+    <!-- Profile photo -->
+    {% if user_obj.photo %}
+      <img src="{{ user_obj.photo.url }}" alt="{{ user_obj.name }}" style="width: 100px; height: 100px; border-radius: 8px; object-fit: cover; flex-shrink: 0;">
+    {% else %}
+      <div style="width: 100px; height: 100px; border-radius: 8px; background: #ccc; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #666; font-size: 0.8rem;">Sem foto</div>
+    {% endif %}
+
+    <!-- User info -->
+    <div style="flex: 1;">
+      <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">{{ user_obj.name }}</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.9rem;">
+        <div>
+          <p style="margin: 0; color: var(--muted);">Usuário</p>
+          <p style="margin: 0.25rem 0 0; font-weight: 600;">{{ user_obj.username }}</p>
+        </div>
+        <div>
+          <p style="margin: 0; color: var(--muted);">Carteirinha</p>
+          <p style="margin: 0.25rem 0 0; font-weight: 600;">{{ user_obj.card_number }}</p>
+        </div>
+      </div>
+      <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(0,0,0,0.1);">
+        <p style="margin: 0; color: var(--muted); font-size: 0.85rem;">Saldo disponível</p>
+        <p style="margin: 0.25rem 0 0; font-size: 1.3rem; font-weight: 700; color: var(--accent);">R$ {{ balance }}</p>
+      </div>
+    </div>
+
+    <!-- Meal price info -->
+    <div style="text-align: right; padding-left: 1rem; border-left: 1px solid rgba(0,0,0,0.1);">
+      <p style="margin: 0; color: var(--muted); font-size: 0.85rem;">Refeição na catraca</p>
+      <p style="margin: 0.5rem 0 0; font-size: 1.1rem; font-weight: 600;">R$ {{ meal_price }}</p>
+    </div>
   </div>
 
-  <form method="post" style="margin-top:1rem;">
+  <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-top: 2rem;" class="student-dashboard">
+    <!-- Left column: Recharge form -->
+    <div>
+      <h2 style="margin-top: 0;">Recarga online</h2>
+      <p style="color: var(--muted); font-size: 0.75rem; margin: 0.5rem 0 1rem;">O crédito é registrado como recarga com pagamento online (sem integração com gateway neste protótipo).</p>
+      <form class="form-panel" method="post" novalidate style="margin-top: 1rem;">
+        {% csrf_token %}
+        <input type="hidden" name="recharge" value="1">
+        {% for field in recharge_form %}
+          <div class="form-row">
+            {{ field.label_tag }}
+            {{ field }}
+            {{ field.errors }}
+          </div>
+        {% endfor %}
+        <button class="btn" type="submit">Confirmar recarga</button>
+      </form>
+    </div>
+
+    <!-- Right column: Transaction history -->
+    <div>
+      <h2 style="margin-top: 0;">Extrato</h2>
+      {% if transactions %}
+        <table class="data" style="font-size: 0.85rem;">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Tipo</th>
+              <th>Valor</th>
+              <th>Detalhe</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for tx in transactions %}
+              <tr>
+                <td>{{ tx.created_at|date:"d/m/Y H:i" }}</td>
+                <td>{{ tx.get_type_display }}</td>
+                <td>
+                  {% if tx.type == "MEAL" %}-{% endif %}R$ {{ tx.amount }}
+                </td>
+                <td class="muted">
+                  {% if tx.type == "RECHARGE" %}
+                    {{ tx.get_recharge_method_display }}
+                  {% elif tx.type == "MEAL" %}
+                    <a href="{% url 'rupayapp:receipt' transaction_id=tx.id %}">Ver comprovante</a>
+                  {% else %}
+                    Refeição
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="muted">Nenhuma movimentação ainda.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <form method="post" style="margin-top:2rem;">
     {% csrf_token %}
     <button class="btn btn-secondary" type="submit" name="logout" value="1">Sair</button>
   </form>
