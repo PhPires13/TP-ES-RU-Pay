@@ -96,16 +96,29 @@ a:hover {
   gap: 1.5rem;
 }
 
-.logo {
-  font-weight: 700;
-  font-size: 1.25rem;
-  color: var(--text);
-  letter-spacing: -0.02em;
+.header-logo svg {
+  height: 40px;
+  width: auto;
+  display: block;
+  transition: transform var(--transition), opacity var(--transition);
 }
 
-.logo:hover {
-  text-decoration: none;
-  color: var(--link);
+.header-logo:hover svg {
+  transform: scale(1.05);
+  opacity: 0.9;
+  transition: transform var(--transition), opacity var(--transition);
+}
+
+.home-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.home-logo svg {
+  height: 120px;
+  width: auto;
 }
 
 .nav {

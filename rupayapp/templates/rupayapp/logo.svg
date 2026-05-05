@@ -1,0 +1,20 @@
+<svg viewBox="0 0 145 40" xmlns="http://www.w3.org/2000/svg">
+  <!-- Efeito de Cartões Empilhados (Cartão de Trás) -->
+  <rect x="6" y="2" width="39" height="26" rx="4" fill="var(--surface, #ffffff)" stroke="var(--text, #2d2b26)" stroke-width="2" />
+
+  <!-- Cartão Principal (Frente) -->
+  <rect x="2" y="8" width="39" height="26" rx="4" fill="var(--accent, #f2e1a6)" stroke="var(--text, #2d2b26)" stroke-width="2" />
+
+  <!-- Ícone do Garfo -->
+  <path d="M 8 14 v 3 a 2 2 0 0 0 4 0 v -3 M 10 14 v 10" stroke="var(--text, #2d2b26)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+
+  <!-- Ícone da Faca -->
+  <path d="M 16 14 v 10 M 16 14 a 2 4.5 0 0 1 0 6" stroke="var(--text, #2d2b26)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+
+  <!-- Símbolo de Pagamento por Aproximação / NFC -->
+  <!-- Utiliza a variável --danger para injetar o Vermelho UFMG de forma sutil -->
+  <path d="M 23 16 A 3 3 0 0 1 23 22 M 26 13.5 A 5.5 5.5 0 0 1 26 24.5 M 29 11 A 8 8 0 0 1 29 27" stroke="var(--danger, #d34545)" stroke-width="1.5" stroke-linecap="round" fill="none" />
+
+  <!-- Tipografia da Logo -->
+  <text x="53" y="29" font-family="'DM Sans', system-ui, sans-serif" font-size="24" font-weight="700" fill="var(--text, #2d2b26)" letter-spacing="-0.04em">RU<tspan font-weight="500" fill="var(--muted, #6e695d)">Pay</tspan></text>
+</svg>

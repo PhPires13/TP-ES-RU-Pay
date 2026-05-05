@@ -11,7 +11,9 @@
 <body>
   <header class="site-header">
     <div class="wrap header-inner">
-      <a class="logo" href="{% url 'rupayapp:home' %}">RU Pay</a>
+      <a class="header-logo" href="{% url 'rupayapp:home' %}">
+          {% include 'rupayapp/logo.svg' %}
+      </a>
 <nav class="nav">
   <a href="{% url 'rupayapp:student_lookup' %}"
      class="{% if request.resolver_match.url_name == 'student_lookup' %}active{% endif %}">
