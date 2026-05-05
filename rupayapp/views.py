@@ -212,8 +212,11 @@ def operator_panel(request):
                 recharge_method=method,
             )
             messages.success(request, f'Recarga de R$ {amount} registrada para {user_obj.name}.')
-            balance = user_balance(user_obj)
-            recharge_form = OperatorRechargeForm()
+            # Clear the form and user data after successful recharge
+            user_obj = None
+            balance = None
+            recharge_form = None
+            lookup_form = CardNumberForm(prefix='lookup')
     else:
         cn = request.GET.get('card_number', '').strip()
         if cn:
@@ -267,23 +270,19 @@ def turnstile(request):
                     price = meal_price()
 
                     if bal < price:
-                        result = {
-                            'allowed': False,
-                            'user': user_obj,
-                            'balance': bal,
-                            'price': price
-                        }
+                        messages.error(request, f'Acesso negado — saldo insuficiente (R$ {bal:.2f})')
                     else:
                         transaction = Transaction.objects.create(
                             user=user_obj,
                             type=Transaction.TransactionType.MEAL,
                             amount=price,
                         )
-                        result = {
-                            'allowed': True,
-                            'user': user_obj,
-                            'balance': user_balance(user_obj)
-                        }
+                        new_balance = user_balance(user_obj)
+                        messages.success(request, f'Acesso liberado — saldo após débito: R$ {new_balance:.2f}')
+                        # Clear the form after successful access
+                        user_obj = None
+                        balance = None
+                        form = TurnstileForm()
 
             except User.DoesNotExist:
                 messages.error(request, 'Carteirinha não cadastrada.')

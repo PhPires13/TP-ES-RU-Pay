@@ -3,72 +3,93 @@
 {% block title %}Cardápio do dia — RU Pay{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Cardápio do dia</h1>
-<p class="lead">Consulte o cardápio dos Restaurantes Universitários da UFMG.</p>
+<style>
+  @media (max-width: 850px) {
+    .cardapio-container {
+      flex-direction: column !important;
+    }
+    .cardapio-left {
+      flex: 1 !important;
+    }
+    .cardapio-right {
+      flex: 1 !important;
+    }
+  }
+</style>
 
-<form class="form-panel" method="get" style="max-width:36rem;">
-  <div class="form-row">
-    <label for="restaurante">Restaurante</label>
-    <select id="restaurante" name="restaurante" required>
-      <option value="">Selecione um restaurante</option>
-      {% for r in restaurantes %}
-        <option value="{{ r.id }}" {% if restaurante_id == r.id|stringformat:"s" %}selected{% endif %}>
-          {{ r.nome }}
-        </option>
-      {% endfor %}
-    </select>
+<div style="display: flex; align-items: flex-start; gap: 2rem; margin-top: 0;" class="cardapio-container">
+  <!-- Left column: Title area and Form -->
+  <div style="flex: 0 0 calc(33.333% - 1rem);" class="cardapio-left">
+    <h1 class="page-title">Cardápio do dia</h1>
+    <p class="lead">Consulte o cardápio dos Restaurantes Universitários da UFMG.</p>
+    <form class="form-panel" method="get" style="max-width: 100%; margin-top: 1rem;">
+      <div class="form-row">
+        <label for="restaurante">Restaurante</label>
+        <select id="restaurante" name="restaurante" required>
+          <option value="">Selecione um restaurante</option>
+          {% for r in restaurantes %}
+            <option value="{{ r.id }}" {% if restaurante_id == r.id|stringformat:"s" %}selected{% endif %}>
+              {{ r.nome }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="data">Data</label>
+        <input type="date" id="data" name="data" value="{{ data_consulta }}" required>
+      </div>
+      <button class="btn" type="submit">Consultar</button>
+    </form>
   </div>
-  <div class="form-row">
-    <label for="data">Data</label>
-    <input type="date" id="data" name="data" value="{{ data_consulta }}" required>
+
+  <!-- Right column: Results -->
+  <div style="flex: 0 0 calc(66.666% - 1rem);" class="cardapio-right">
+    {% if erro %}
+      <div class="flash flash-warning" style="margin-bottom: 1rem;">{{ erro }}</div>
+    {% endif %}
+
+    {% if cardapio_data %}
+      <h2 style="font-size: 1.25rem; margin: 0 0 1rem; font-weight: 600;">{{ cardapio_data.nome }}</h2>
+
+        {% for dia in cardapio_data.cardapios %}
+          {% for refeicao in dia.refeicoes %}
+            <div class="card" style="margin-bottom: 1.25rem;">
+              <h3 style="margin: 0 0 0.75rem; font-size: 1rem; display: flex; align-items: center; gap: 0.4rem;">
+                {% if refeicao.tipoRefeicao == "Almoço" %}
+                  🍽️
+                {% elif refeicao.tipoRefeicao == "Jantar" %}
+                  🌙
+                {% else %}
+                  ☕
+                {% endif %}
+                {{ refeicao.tipoRefeicao }}
+              </h3>
+              <table class="data" style="font-size: 0.9rem;">
+                <thead>
+                  <tr>
+                    <th>Tipo</th>
+                    <th>Prato</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for prato in refeicao.pratos %}
+                    <tr>
+                      <td class="muted">{{ prato.tipoPrato }}</td>
+                      <td>{{ prato.descricaoPrato }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endfor %}
+        {% endfor %}
+    {% elif restaurante_id or cardapio_data %}
+      <p class="muted">Selecione um restaurante e data para visualizar o cardápio.</p>
+    {% endif %}
   </div>
-  <button class="btn" type="submit">Consultar</button>
-</form>
+</div>
 
-{% if erro %}
-  <div class="flash flash-warning" style="margin-top:1.5rem;">{{ erro }}</div>
-{% endif %}
-
-{% if cardapio_data %}
-  <div style="margin-top:2rem;">
-    <h2 style="font-size:1.2rem;margin:0 0 1rem;">{{ cardapio_data.nome }}</h2>
-
-    {% for dia in cardapio_data.cardapios %}
-      {% for refeicao in dia.refeicoes %}
-        <div class="card" style="max-width:36rem;margin-bottom:1.25rem;">
-          <h3 style="margin:0 0 0.75rem;font-size:1rem;display:flex;align-items:center;gap:0.4rem;">
-            {% if refeicao.tipoRefeicao == "Almoço" %}
-              🍽️
-            {% elif refeicao.tipoRefeicao == "Jantar" %}
-              🌙
-            {% else %}
-              ☕
-            {% endif %}
-            {{ refeicao.tipoRefeicao }}
-          </h3>
-          <table class="data">
-            <thead>
-              <tr>
-                <th>Tipo</th>
-                <th>Prato</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for prato in refeicao.pratos %}
-                <tr>
-                  <td class="muted">{{ prato.tipoPrato }}</td>
-                  <td>{{ prato.descricaoPrato }}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      {% endfor %}
-    {% endfor %}
-  </div>
-{% endif %}
-
-<p class="muted" style="margin-top:1.5rem;font-size:0.8rem;">
+<p class="muted" style="margin-top: 1.5rem; font-size: 0.8rem;">
   Fonte: <a href="https://fump.ufmg.br/cardapio-do-dia/" target="_blank" rel="noopener">FUMP – Assistência Estudantil da UFMG</a>.
   O cardápio pode sofrer alterações sem aviso prévio.
 </p>

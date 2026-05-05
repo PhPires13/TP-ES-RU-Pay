@@ -38,13 +38,15 @@
     </div>
   </header>
 
-  {% if messages %}
-    <div class="wrap messages">
-      {% for message in messages %}
-        <p class="flash flash-{{ message.tags }}">{{ message }}</p>
-      {% endfor %}
-    </div>
-  {% endif %}
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Django Messages (Hidden) -->
+  <div style="display: none;" id="messages-data">
+    {% for message in messages %}
+      <div data-message="{{ message }}" data-level="{{ message.level_tag }}"></div>
+    {% endfor %}
+  </div>
 
   <main class="wrap main">
     {% block content %}{% endblock %}
@@ -55,5 +57,63 @@
       <small>Restaurante Universitário — protótipo acadêmico</small>
     </div>
   </footer>
+
+  <script>
+    // Toast notification system
+    function showToast(message, level) {
+      const container = document.getElementById('toast-container');
+
+      // Map message levels to icons and CSS classes
+      const levelMap = {
+        success: { icon: '✓', class: 'toast-success' },
+        error: { icon: '✕', class: 'toast-error' },
+        danger: { icon: '✕', class: 'toast-error' },
+        warning: { icon: '⚠', class: 'toast-warning' },
+        info: { icon: 'ⓘ', class: 'toast-info' },
+      };
+
+      const config = levelMap[level] || levelMap['info'];
+
+      const toast = document.createElement('div');
+      toast.className = `toast ${config.class}`;
+      toast.innerHTML = `
+        <span class="toast-icon">${config.icon}</span>
+        <span class="toast-message">${message}</span>
+        <button class="toast-close" aria-label="Close notification">&times;</button>
+      `;
+
+      container.appendChild(toast);
+
+      // Add close button functionality
+      toast.querySelector('.toast-close').addEventListener('click', () => {
+        removeToast(toast);
+      });
+
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        removeToast(toast);
+      }, 5000);
+    }
+
+    function removeToast(toast) {
+      toast.classList.add('removing');
+      setTimeout(() => {
+        toast.remove();
+      }, 300);
+    }
+
+    // Initialize toasts from Django messages
+    document.addEventListener('DOMContentLoaded', () => {
+      const messagesData = document.getElementById('messages-data');
+      if (messagesData) {
+        const messages = messagesData.querySelectorAll('div[data-message]');
+        messages.forEach(msg => {
+          const messageText = msg.getAttribute('data-message');
+          const messageLevel = msg.getAttribute('data-level');
+          showToast(messageText, messageLevel);
+        });
+      }
+    });
+  </script>
 </body>
 </html>

@@ -68,19 +68,5 @@
   </div>
 {% endif %}
 
-<!-- RESULTADO FINAL -->
-{% if result %}
-  {% if result.allowed %}
-    <div class="result-ok">
-      <strong>Acesso liberado</strong>
-      <p>{{ result.user.name }} — saldo após débito: R$ {{ result.balance }}</p>
-    </div>
-  {% else %}
-    <div class="result-deny">
-      <strong>Acesso negado</strong>
-      <p>{{ result.user.name }} — saldo insuficiente</p>
-    </div>
-  {% endif %}
-{% endif %}
 
 {% endblock %}
