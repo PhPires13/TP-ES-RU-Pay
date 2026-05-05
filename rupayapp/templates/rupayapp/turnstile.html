@@ -7,41 +7,64 @@
 <p class="lead">Validação com foto antes da liberação.</p>
 
 <!-- ETAPA 1: Buscar -->
-<form class="form-panel" method="post" novalidate>
-  {% csrf_token %}
-  {% for field in form %}
-    <div class="form-row">
-      {{ field.label_tag }}
-      {{ field }}
-      {{ field.errors }}
-    </div>
-  {% endfor %}
-  <button class="btn" type="submit" name="lookup">Buscar carteirinha</button>
-</form>
+<div style="display: flex; gap: 2rem; align-items: flex-start;">
+  <form class="form-panel" method="post" novalidate style="flex: 1;">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="form-row">
+        {{ field.label_tag }}
+        {{ field }}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+    <button class="btn" type="submit" name="lookup">Buscar carteirinha</button>
+  </form>
+
+  <div style="flex-shrink: 0; text-align: center; padding: 1rem; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border);">
+    <p class="muted" style="margin: 0 0 0.5rem; font-size: 0.9rem;">Valor da refeição</p>
+    <p style="margin: 0; font-size: 2rem; font-weight: 700; color: var(--accent);">R$ {{ meal_price }}</p>
+  </div>
+</div>
 
 <!-- ETAPA 2: Mostrar dados + confirmação -->
 {% if user_obj %}
-  <div class="balance-box" style="margin-top:1.5rem;">
-    <p><strong>{{ user_obj.name }}</strong></p>
-
-    {% if user_obj.photo %}
-      <p class="muted" style="color:#b45309;">
-        Confirme se a foto corresponde ao aluno
+  <div class="balance-box" style="margin-top:1.5rem; display: flex; gap: 2rem; align-items: flex-start;">
+    <!-- Profile Picture -->
+    <div style="flex-shrink: 0;">
+      {% if user_obj.photo %}
+        <img src="{{ user_obj.photo.url }}" width="100" height="100" style="border-radius:8px; object-fit: cover;">
+      {% else %}
+        <div style="width: 100px; height: 100px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #999;">
+          Sem foto
+        </div>
+      {% endif %}
+      <p class="muted" style="color:#b45309; margin-top: 0.5rem; font-size: 0.85rem; text-align: center;">
+        Confirme se a foto corresponde
       </p>
-      <img src="{{ user_obj.photo.url }}" width="150" style="border-radius:8px;">
-    {% else %}
-      <p class="muted">Aluno sem foto cadastrada</p>
-    {% endif %}
+    </div>
 
-    <p style="margin-top:0.75rem;">
-      Saldo atual: R$ {{ balance }} <br>
-    </p>
+    <!-- User Info -->
+    <div style="flex-grow: 1;">
+      <p class="muted" style="margin:0 0 0.25rem;">Nome</p>
+      <p style="margin:0; font-size:1.1rem; font-weight:600;">{{ user_obj.name }}</p>
 
-    <form method="post">
-      {% csrf_token %}
-      <input type="hidden" name="card_number" value="{{ user_obj.card_number }}">
-      <button class="btn" type="submit" name="confirm">Confirmar entrada</button>
-    </form>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.75rem;">
+        <div>
+          <p class="muted" style="margin:0 0 0.25rem; font-size: 0.85rem;">Carteirinha</p>
+          <p style="margin:0;">{{ user_obj.card_number }}</p>
+        </div>
+        <div>
+          <p class="muted" style="margin:0 0 0.25rem; font-size: 0.85rem;">Saldo</p>
+          <p style="margin:0; font-weight: 600;">R$ {{ balance }}</p>
+        </div>
+      </div>
+
+      <form method="post" style="margin-top: 1rem;">
+        {% csrf_token %}
+        <input type="hidden" name="card_number" value="{{ user_obj.card_number }}">
+        <button class="btn" type="submit" name="confirm">Confirmar entrada</button>
+      </form>
+    </div>
   </div>
 {% endif %}
 

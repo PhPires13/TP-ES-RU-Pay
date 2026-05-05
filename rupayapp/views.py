@@ -233,6 +233,7 @@ def operator_panel(request):
             'user_obj': user_obj,
             'balance': balance,
             'recharge_form': recharge_form,
+            'meal_price': meal_price(),
         },
     )
 
