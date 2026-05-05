@@ -72,7 +72,10 @@ class OperatorRechargeForm(forms.Form):
     )
     method = forms.ChoiceField(
         label='Forma de pagamento',
-        choices=Transaction.MethodType.choices,
+        choices=[
+            (Transaction.MethodType.CASH, 'Dinheiro'),
+            (Transaction.MethodType.CARD, 'Cartão'),
+        ],
         initial=Transaction.MethodType.CASH,
     )
 

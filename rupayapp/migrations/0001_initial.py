@@ -36,9 +36,9 @@ class Migration(migrations.Migration):
             name='Transaction',
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('type', models.CharField(choices=[('RECHARGE', 'Recharge'), ('MEAL', 'Meal')], max_length=20)),
+                ('type', models.CharField(choices=[('RECHARGE', 'Recarga'), ('MEAL', 'Refeição')], max_length=20)),
                 ('amount', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('recharge_method', models.CharField(blank=True, choices=[('ONLINE', 'Online'), ('CASH', 'Cash'), ('CARD', 'Card')], max_length=20, null=True)),
+                ('recharge_method', models.CharField(blank=True, choices=[('ONLINE', 'Online'), ('CASH', 'Dinheiro'), ('CARD', 'Cartão')], max_length=20, null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('operator', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='transactions', to='rupayapp.operator')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='transactions', to='rupayapp.user')),

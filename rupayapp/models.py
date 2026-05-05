@@ -32,13 +32,13 @@ class User(models.Model):
 class Transaction(models.Model):
 
     class TransactionType(models.TextChoices):
-        RECHARGE = 'RECHARGE', 'Recharge'
-        MEAL = 'MEAL', 'Meal'
+        RECHARGE = 'RECHARGE', 'Recarga'
+        MEAL = 'MEAL', 'Refeição'
 
     class MethodType(models.TextChoices):
         ONLINE = 'ONLINE', 'Online'
-        CASH = 'CASH', 'Cash'
-        CARD = 'CARD', 'Card'
+        CASH = 'CASH', 'Dinheiro'
+        CARD = 'CARD', 'Cartão'
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions')
