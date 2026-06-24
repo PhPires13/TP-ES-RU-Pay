@@ -1,29 +1,11 @@
-Name                                                                                       Stmts   Miss  Cover   Missing
-------------------------------------------------------------------------------------------------------------------------
-manage.py                                                                                     11      2    82%   12-13
-rupay/__init__.py                                                                              0      0   100%
-rupay/asgi.py                                                                                  4      4     0%   10-16
-rupay/settings.py                                                                             20      0   100%
-rupay/urls.py                                                                                  5      0   100%
-rupay/wsgi.py                                                                                  4      4     0%   10-16
-rupayapp/__init__.py                                                                           0      0   100%
-rupayapp/admin.py                                                                             12      0   100%
-rupayapp/apps.py                                                                               3      0   100%
-rupayapp/e2e_test.py                                                                          43     43     0%   1-87
-rupayapp/forms.py                                                                             39      0   100%
-rupayapp/migrations/0001_initial.py                                                            7      0   100%
-rupayapp/migrations/0002_user_photo.py                                                         4      0   100%
-rupayapp/migrations/0003_remove_transaction_operator_transaction_action_mode_and_more.py       4      0   100%
-rupayapp/migrations/0004_alter_user_card_number.py                                             5      0   100%
-rupayapp/migrations/0005_user_password_hash.py                                                 4      0   100%
-rupayapp/migrations/__init__.py                                                                0      0   100%
-rupayapp/models.py                                                                            35      0   100%
-rupayapp/urls.py                                                                               4      0   100%
-rupayapp/utils.py                                                                             13      0   100%
-rupayapp/views.py                                                                            182      4    98%   36-39
-testes/__init__.py                                                                             0      0   100%
-testes/barbara_e2e_test.py                                                                    43     43     0%   1-87
-testes/barbara_tests.py                                                                      148    148     0%   1-214
-testes/tests.py                                                                              446      0   100%
-------------------------------------------------------------------------------------------------------------------------
-TOTAL                                                                                       1036    248    76%
+Name                 Stmts   Miss  Cover   Missing
+--------------------------------------------------
+rupayapp/admin.py       12      0   100%
+rupayapp/apps.py         3      0   100%
+rupayapp/forms.py       39      0   100%
+rupayapp/models.py      35      0   100%
+rupayapp/urls.py         4      0   100%
+rupayapp/utils.py       13      0   100%
+rupayapp/views.py      182      4    98%   36-39
+--------------------------------------------------
+TOTAL                  288      4    99%
