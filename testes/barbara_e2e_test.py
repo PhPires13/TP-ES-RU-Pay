@@ -1,8 +1,8 @@
 from decimal import Decimal
 from django.test import TestCase, Client
 
-from .models import User, Transaction
-from .utils import user_balance, meal_price
+from rupayapp.models import User, Transaction
+from rupayapp.utils import user_balance, meal_price
 
 
 class E2ETests(TestCase):

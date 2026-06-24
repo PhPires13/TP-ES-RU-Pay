@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase, Client
 from django.contrib.auth.hashers import check_password
 
-from .forms import (
+from rupayapp.forms import (
 	CardNumberForm,
 	StudentLoginForm,
 	UserRegistrationForm,
@@ -13,8 +13,8 @@ from .forms import (
 	OperatorRechargeForm,
 	TurnstileForm,
 )
-from .models import User, Transaction
-from .utils import meal_price, user_balance
+from rupayapp.models import User, Transaction
+from rupayapp.utils import meal_price, user_balance
 
 
 class UserModelTests(TestCase):
