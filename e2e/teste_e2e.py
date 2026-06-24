@@ -351,7 +351,7 @@ class BalanceAndHistoryE2ETest(StaticLiveServerTestCase):
         self.wait.until(
             EC.text_to_be_present_in_element((By.CSS_SELECTOR, 'body'), 'Historico E2E')
         )
-        self.assertIn('44.40', driver.page_source)
+        self.assertIn('44,40', driver.page_source)
 
         # 3) O extrato deve listar tanto a recarga quanto a refeição (US4)
         extrato_table = self.wait.until(
