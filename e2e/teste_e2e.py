@@ -33,6 +33,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from rupayapp.models import Transaction, User
+from rupayapp.utils import user_balance
 
 
 def _build_headless_chrome():
@@ -230,3 +231,133 @@ class OperatorAndTurnstileFlowE2ETest(StaticLiveServerTestCase):
 
         # Saldo final esperado: 40.00 (recarga) - 5.60 (refeição) = 34.40
         self.assertIn('34.40', driver.page_source)
+
+
+class TurnstileAccessDeniedE2ETest(StaticLiveServerTestCase):
+    """E2E: catraca bloqueia o acesso de aluno com saldo insuficiente (US9)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.selenium = _build_headless_chrome()
+        cls.selenium.implicitly_wait(5)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.selenium.quit()
+        super().tearDownClass()
+
+    def setUp(self):
+        self.wait = WebDriverWait(self.selenium, 10)
+        # Aluno com saldo de apenas R$ 2,00 (abaixo do preço da refeição de R$ 5,60)
+        self.student = User._default_manager.create(
+            username='semsaldoe2e',
+            name='Sem Saldo E2E',
+            card_number='55544433',
+        )
+        Transaction._default_manager.create(
+            user=self.student,
+            type=Transaction.TransactionType.RECHARGE,
+            amount=Decimal('2.00'),
+            recharge_method=Transaction.MethodType.ONLINE,
+        )
+
+    def test_catraca_bloqueia_saldo_insuficiente(self):
+        driver = self.selenium
+
+        # 1) Aluno passa a carteirinha na catraca
+        driver.get(f'{self.live_server_url}/catraca/')
+        driver.find_element(By.ID, 'id_card_number').send_keys('55544433')
+        lookup_btn = self.wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'button[type="submit"][name="lookup"]'))
+        )
+        driver.execute_script("arguments[0].click();", lookup_btn)
+
+        # A tela deve mostrar o nome do aluno e o botão de confirmar entrada
+        self.wait.until(
+            EC.text_to_be_present_in_element((By.CSS_SELECTOR, 'body'), 'Sem Saldo E2E')
+        )
+        confirm_button = self.wait.until(
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, 'button[type="submit"][name="confirm"]')
+            )
+        )
+        driver.execute_script("arguments[0].click();", confirm_button)
+
+        # 2) Acesso deve ser NEGADO por saldo insuficiente
+        self.wait.until(
+            EC.text_to_be_present_in_element((By.CSS_SELECTOR, 'body'), 'Acesso negado')
+        )
+
+        # Nenhuma transação de refeição deve ter sido criada; saldo permanece R$ 2,00
+        self.assertFalse(
+            Transaction._default_manager.filter(
+                user=self.student, type=Transaction.TransactionType.MEAL
+            ).exists(),
+            'Não deveria existir refeição quando o saldo é insuficiente.',
+        )
+        self.assertEqual(user_balance(self.student), Decimal('2.00'))
+
+
+class BalanceAndHistoryE2ETest(StaticLiveServerTestCase):
+    """E2E: aluno consulta saldo e histórico de transações (US3 e US4)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.selenium = _build_headless_chrome()
+        cls.selenium.implicitly_wait(5)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.selenium.quit()
+        super().tearDownClass()
+
+    def setUp(self):
+        self.wait = WebDriverWait(self.selenium, 10)
+        # Aluno já cadastrado e com histórico: 1 recarga e 1 refeição
+        self.student = User._default_manager.create(
+            username='historicoe2e',
+            name='Historico E2E',
+            card_number='66677788',
+        )
+        self.student.set_password('senha123')
+        self.student.save()
+        Transaction._default_manager.create(
+            user=self.student,
+            type=Transaction.TransactionType.RECHARGE,
+            amount=Decimal('50.00'),
+            recharge_method=Transaction.MethodType.ONLINE,
+        )
+        Transaction._default_manager.create(
+            user=self.student,
+            type=Transaction.TransactionType.MEAL,
+            amount=Decimal('5.60'),
+        )
+
+    def test_aluno_consulta_saldo_e_historico(self):
+        driver = self.selenium
+
+        # 1) Aluno faz login na área de consulta
+        driver.get(f'{self.live_server_url}/aluno/consulta/')
+        driver.find_element(By.ID, 'id_username').send_keys('historicoe2e')
+        driver.find_element(By.ID, 'id_password').send_keys('senha123')
+        submit_btn = self.wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'form.form-panel button[type="submit"]'))
+        )
+        driver.execute_script("arguments[0].click();", submit_btn)
+
+        # 2) Nome e saldo atual (50,00 - 5,60 = 44,40) devem aparecer na tela
+        self.wait.until(
+            EC.text_to_be_present_in_element((By.CSS_SELECTOR, 'body'), 'Historico E2E')
+        )
+        self.assertIn('44.40', driver.page_source)
+
+        # 3) O extrato deve listar tanto a recarga quanto a refeição (US4)
+        extrato_table = self.wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'table.data'))
+        )
+        self.assertIn('Recarga', extrato_table.text)
+        self.assertIn('Refeição', extrato_table.text)
+        self.assertIn('50', extrato_table.text)
+        self.assertIn('5', extrato_table.text)
