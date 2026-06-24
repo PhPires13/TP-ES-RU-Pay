@@ -21,7 +21,7 @@ class FullFlowIntegrationTest(TestCase):
         self.turnstile_url = '/catraca/'
 
     def test_full_user_flow_online_and_inperson_recharge_and_meal(self):
-        # 1) Cadastro do aluno
+        # 1) Aluno se cadastra no sistema
         resp = self.client.post(self.register_url, {
             'username': 'e2estudent',
             'name': 'E2E Student',
@@ -31,25 +31,25 @@ class FullFlowIntegrationTest(TestCase):
         })
         self.assertIn(resp.status_code, (200, 302))
         user = User.objects.filter(username='e2estudent').first()
-        self.assertIsNotNone(user)
+        self.assertIsNotNone(user)  # Aluno foi criado
 
-        # 2) Login (área do aluno)
+        # 2) Aluno faz login na area de consulta
         resp = self.client.post(self.lookup_url, {'username': 'e2estudent', 'password': 'e2epass'})
         self.assertEqual(resp.status_code, 200)
-        session = self.client.session
+        session = self.client.session  # Mantem o aluno logado para a recarga
         session['student_user_id'] = str(user.id)
         session.save()
 
-        # 3) Recarga online
+        # 3) Aluno faz uma recarga online de R$30
         resp = self.client.post(self.lookup_url, {'recharge': 'true', 'amount': '30.00'})
         self.assertEqual(resp.status_code, 200)
         tx_online = Transaction.objects.filter(
             user=user, type=Transaction.TransactionType.RECHARGE, amount=Decimal('30.00')
         ).first()
-        self.assertIsNotNone(tx_online)
-        self.assertEqual(user_balance(user), Decimal('30.00'))
+        self.assertIsNotNone(tx_online)  # Recarga online registrada
+        self.assertEqual(user_balance(user), Decimal('30.00'))  # Saldo = 30
 
-        # 4) Recarga presencial (dinheiro) pelo operador
+        # 4) Operador registra uma recarga presencial em dinheiro de R$20
         resp = self.client.post(self.panel_url, {
             'card_number': '87654321',
             'recharge': 'true',
@@ -60,14 +60,14 @@ class FullFlowIntegrationTest(TestCase):
         tx_cash = Transaction.objects.filter(
             user=user, type=Transaction.TransactionType.RECHARGE, amount=Decimal('20.00')
         ).first()
-        self.assertIsNotNone(tx_cash)
-        self.assertEqual(user_balance(user), Decimal('50.00'))
+        self.assertIsNotNone(tx_cash)  # Recarga presencial registrada
+        self.assertEqual(user_balance(user), Decimal('50.00'))  # Saldo = 30 + 20
 
-        # 5) Refeição na catraca (saldo suficiente)
+        # 5) Aluno passa na catraca e a refeicao e debitada
         current_balance = user_balance(user)
         meal = meal_price()
         resp = self.client.post(self.turnstile_url, {'card_number': '87654321', 'confirm': 'true'})
         self.assertEqual(resp.status_code, 200)
         meal_tx = Transaction.objects.filter(user=user, type=Transaction.TransactionType.MEAL).first()
-        self.assertIsNotNone(meal_tx)
-        self.assertEqual(user_balance(user), current_balance - meal)
+        self.assertIsNotNone(meal_tx)  # Refeicao debitada
+        self.assertEqual(user_balance(user), current_balance - meal)  # Saldo cai o valor da refeicao

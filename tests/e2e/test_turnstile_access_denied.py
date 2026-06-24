@@ -13,7 +13,7 @@ from ._helpers import BaseE2ETest
 class TurnstileAccessDeniedE2ETest(BaseE2ETest):
     def setUp(self):
         super().setUp()
-        # Aluno com saldo de apenas R$ 2,00 (abaixo do preço da refeição de R$ 5,60)
+        # Aluno com saldo de apenas R$2,00 (abaixo do preco da refeicao de R$5,60)
         self.student = User._default_manager.create(
             username='semsaldoe2e',
             name='Sem Saldo E2E',
@@ -35,23 +35,23 @@ class TurnstileAccessDeniedE2ETest(BaseE2ETest):
         lookup_btn = self.wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR, 'button[type="submit"][name="lookup"]'))
         )
-        driver.execute_script("arguments[0].click();", lookup_btn)
+        driver.execute_script("arguments[0].click();", lookup_btn)  # Busca o aluno
 
-        # A tela deve mostrar o nome do aluno e o botão de confirmar entrada
+        # Tela mostra o aluno e o botao de confirmar entrada
         self.wait.until(
             EC.text_to_be_present_in_element((By.CSS_SELECTOR, 'body'), 'Sem Saldo E2E')
         )
         confirm_button = self.wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR, 'button[type="submit"][name="confirm"]'))
         )
-        driver.execute_script("arguments[0].click();", confirm_button)
+        driver.execute_script("arguments[0].click();", confirm_button)  # Tenta confirmar a entrada
 
-        # 2) Acesso deve ser NEGADO por saldo insuficiente
+        # 2) Acesso e NEGADO por saldo insuficiente
         self.wait.until(
             EC.text_to_be_present_in_element((By.CSS_SELECTOR, 'body'), 'Acesso negado')
         )
 
-        # Nenhuma transação de refeição deve ter sido criada; saldo permanece R$ 2,00
+        # Nenhuma refeicao foi criada e o saldo continua R$2,00
         self.assertFalse(
             Transaction._default_manager.filter(
                 user=self.student, type=Transaction.TransactionType.MEAL

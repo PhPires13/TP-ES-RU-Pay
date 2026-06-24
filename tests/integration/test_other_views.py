@@ -12,16 +12,16 @@ class HomeViewTests(TestCase):
         self.client = Client()
 
     def test_home_renders_with_meal_price(self):
-        response = self.client.get('/')
+        response = self.client.get('/')  # Abre a pagina inicial
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context.get('meal_price'), Decimal('5.60'))
+        self.assertEqual(response.context.get('meal_price'), Decimal('5.60'))  # Mostra o preco da refeicao
 
 
 class ReceiptViewTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create(username='student', name='Student', card_number='12345678')
-        self.transaction = Transaction.objects.create(
+        self.transaction = Transaction.objects.create(  # Transacao que tera comprovante
             user=self.user,
             type=Transaction.TransactionType.RECHARGE,
             amount=Decimal('50.00'),
@@ -29,19 +29,19 @@ class ReceiptViewTests(TestCase):
         )
 
     def test_receipt_renders_for_existing_transaction(self):
-        response = self.client.get(f'/comprovante/{self.transaction.id}/')
+        response = self.client.get(f'/comprovante/{self.transaction.id}/')  # Abre o comprovante
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context.get('transaction'), self.transaction)
-        self.assertEqual(response.context.get('user'), self.user)
-        self.assertEqual(response.context.get('balance'), Decimal('50.00'))
+        self.assertEqual(response.context.get('transaction'), self.transaction)  # Mostra a transacao
+        self.assertEqual(response.context.get('user'), self.user)  # O aluno dono
+        self.assertEqual(response.context.get('balance'), Decimal('50.00'))  # E o saldo atual
 
     def test_receipt_unknown_transaction_returns_404(self):
-        response = self.client.get('/comprovante/00000000-0000-0000-0000-000000000000/')
-        self.assertEqual(response.status_code, 404)
+        response = self.client.get('/comprovante/00000000-0000-0000-0000-000000000000/')  # Comprovante inexistente
+        self.assertEqual(response.status_code, 404)  # Pagina nao encontrada
 
 
 class CardapioViewTests(TestCase):
-    """Isola a API externa da FUMP via mock de `_fump_get`."""
+    """Isola a API externa da FUMP via mock de `_fump_get` (nao chama a internet)."""
 
     def setUp(self):
         self.client = Client()
@@ -49,29 +49,29 @@ class CardapioViewTests(TestCase):
 
     @patch('rupayapp.views._fump_get')
     def test_lists_restaurantes(self, mock_fump):
-        mock_fump.return_value = [{'id': 1, 'nome': 'RU Central'}]
-        response = self.client.get(self.cardapio_url)
+        mock_fump.return_value = [{'id': 1, 'nome': 'RU Central'}]  # Finge a resposta da FUMP
+        response = self.client.get(self.cardapio_url)  # Abre o cardapio sem escolher restaurante
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context.get('restaurantes'), [{'id': 1, 'nome': 'RU Central'}])
-        self.assertIsNone(response.context.get('cardapio_data'))
+        self.assertEqual(response.context.get('restaurantes'), [{'id': 1, 'nome': 'RU Central'}])  # Lista os restaurantes
+        self.assertIsNone(response.context.get('cardapio_data'))  # Sem cardapio ainda
         self.assertIsNone(response.context.get('erro'))
 
     @patch('rupayapp.views._fump_get')
     def test_with_menu_data(self, mock_fump):
-        def side_effect(path):
+        def side_effect(path):  # Simula respostas diferentes por endpoint da FUMP
             if path == '/restaurantes':
                 return [{'id': 1, 'nome': 'RU Central'}]
             return {'cardapios': [{'data': '2026-06-24', 'itens': ['Arroz', 'Feijão']}]}
 
         mock_fump.side_effect = side_effect
-        response = self.client.get(self.cardapio_url, {'restaurante': '1', 'data': '2026-06-24'})
+        response = self.client.get(self.cardapio_url, {'restaurante': '1', 'data': '2026-06-24'})  # Escolhe restaurante e data
         self.assertEqual(response.status_code, 200)
-        self.assertIsNotNone(response.context.get('cardapio_data'))
+        self.assertIsNotNone(response.context.get('cardapio_data'))  # Mostra o cardapio do dia
         self.assertIsNone(response.context.get('erro'))
 
     @patch('rupayapp.views._fump_get')
     def test_no_menu_found(self, mock_fump):
-        def side_effect(path):
+        def side_effect(path):  # FUMP responde, mas sem cardapio para a data
             if path == '/restaurantes':
                 return [{'id': 1, 'nome': 'RU Central'}]
             return {'cardapios': []}
@@ -80,11 +80,11 @@ class CardapioViewTests(TestCase):
         response = self.client.get(self.cardapio_url, {'restaurante': '1', 'data': '2026-06-24'})
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.context.get('cardapio_data'))
-        self.assertEqual(response.context.get('erro'), 'Nenhum cardápio encontrado para essa data.')
+        self.assertEqual(response.context.get('erro'), 'Nenhum cardápio encontrado para essa data.')  # Mensagem de aviso
 
     @patch('rupayapp.views._fump_get')
     def test_service_unavailable(self, mock_fump):
-        def side_effect(path):
+        def side_effect(path):  # FUMP fora do ar ao buscar o cardapio
             if path == '/restaurantes':
                 return []
             return None
@@ -92,18 +92,18 @@ class CardapioViewTests(TestCase):
         mock_fump.side_effect = side_effect
         response = self.client.get(self.cardapio_url, {'restaurante': '1', 'data': '2026-06-24'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context.get('erro'), 'Não foi possível conectar ao serviço da FUMP.')
+        self.assertEqual(response.context.get('erro'), 'Não foi possível conectar ao serviço da FUMP.')  # Mensagem de erro
 
     def test_fump_get_returns_none_on_network_error(self):
         from rupayapp.views import _fump_get
 
-        with patch('rupayapp.views.urllib.request.urlopen', side_effect=OSError('boom')):
-            self.assertIsNone(_fump_get('/restaurantes'))
+        with patch('rupayapp.views.urllib.request.urlopen', side_effect=OSError('boom')):  # Simula falha de rede
+            self.assertIsNone(_fump_get('/restaurantes'))  # Trata o erro e devolve None
 
     def test_fump_get_parses_json_response(self):
         from rupayapp.views import _fump_get
 
-        class _FakeResponse:
+        class _FakeResponse:  # Resposta HTTP falsa com um JSON valido
             def __enter__(self):
                 return self
 
@@ -114,4 +114,4 @@ class CardapioViewTests(TestCase):
                 return b'[{"id": 1, "nome": "RU Central"}]'
 
         with patch('rupayapp.views.urllib.request.urlopen', return_value=_FakeResponse()):
-            self.assertEqual(_fump_get('/restaurantes'), [{'id': 1, 'nome': 'RU Central'}])
+            self.assertEqual(_fump_get('/restaurantes'), [{'id': 1, 'nome': 'RU Central'}])  # Decodifica o JSON
